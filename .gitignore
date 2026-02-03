@@ -1,0 +1,22 @@
+# 1. THE SECRETS (Highest Priority)
+.env
+
+# 2. PYTHON JUNK
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# 3. VIRTUAL ENVIRONMENTS
+# Note: Do NOT use .env/ for a folder name if your secret file is named .env
+venv/
+.venv/
+env/
+
+# 4. DJANGO MEDIA & DB
+db.sqlite3
+media/
+
+# 5. IDE SETTINGS (Optional but helpful for 6 devs)
+.vscode/
+.idea/
