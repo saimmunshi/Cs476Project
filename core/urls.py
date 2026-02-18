@@ -29,5 +29,6 @@ urlpatterns = [
     path('students/', include('students.urls')),
 
     # Any URL starting with 'accounts/' will be handled by users.urls
+    # Note from Mark: Not sure exactly how this pathing works, but URLS will have /accounts/ in it.
     path('accounts/', include('users.urls')),
 ]

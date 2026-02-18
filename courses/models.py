@@ -2,8 +2,10 @@
 from django.db import models
 from django_mongodb_backend.fields import ObjectIdAutoField
 
-# Class: Course (collection = courses_course)
-# 
+# Added by Mark: This creates the blueprint for the entire Course and Task system backend.
+
+# Class: Course (MongoDB collection = courses_course)
+# The main overarching object blueprint for a Course.
 #
 #
 class Course(models.Model):
@@ -28,7 +30,7 @@ class Course(models.Model):
   def __str__(self):
     return self.title
 
-# Class: Task (collection = courses_task)
+# Class: Task (MongoDB collection = courses_task)
 # 
 #
 #
@@ -44,15 +46,15 @@ class Task(models.Model):
   description = models.TextField()
   start_date = due_date = models.DateTimeField(null=True, blank=True)
   due_date = models.DateTimeField(null=True, blank=True)
-  points_possible = models.IntegerField(default=100) # e.g., Out of 100
+  points_possible = models.IntegerField(default=100) # Might be removed, don't need grading.
   
   created_at = models.DateTimeField(auto_now_add=True)
 
   def __str__(self):
     return f"{self.title} ({self.course.title})"
 
-# Class: TaskSubmission (collection = courses_tasksubmission)
-# Goal: Represents the student's actual work (the file or answer).
+# Class: TaskSubmission (MongoDB collection = courses_tasksubmission)
+# Represents the student's actual uploaded submission (the file or answer).
 #
 #
 class TaskSubmission(models.Model):
@@ -83,14 +85,11 @@ class TaskSubmission(models.Model):
   def __str__(self):
       return f"Submission: {self.student} - {self.task.title}"
 
-# Class: TaskFeedBack (collection = courses_taskfeedback)
-# 
+# Class: TaskFeedBack (MongoDB collection = courses_taskfeedback)
+# Represents the teacher's grading and comments.
 #
 #
 class TaskFeedback(models.Model):
-  """
-  Represents the teacher's grading and comments.
-  """
   id = ObjectIdAutoField(primary_key=True)
   
   # OneToOne because one submission has exactly one feedback/grade
@@ -100,8 +99,8 @@ class TaskFeedback(models.Model):
       related_name='feedback' # Access via: submission.feedback
   )
   
-  grade = models.FloatField() # e.g., 95.5
-  comments = models.TextField(blank=True) # "Great job, but check spelling."
+  grade = models.FloatField() # Might be removed, don't need grading.
+  comments = models.TextField(blank=True) # Example: "Great job, but check spelling."
   
   graded_at = models.DateTimeField(auto_now_add=True)
 

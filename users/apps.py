@@ -1,6 +1,7 @@
 # users/apps.py
 from django.apps import AppConfig
 
+# Added by Mark: I lowkey have no idea how this works. Will have to look into how this config works.
 class UsersConfig(AppConfig):
     name = 'users'
 

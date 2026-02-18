@@ -8,7 +8,7 @@ class Student(MentoraBaseUser):
     student_id = models.CharField(max_length=50)
     
     class Meta:
-        db_table = 'users_student'  # Custom collection name
+        db_table = 'users_student'  # Custom collection name (instead of stupid thing like users_user)
     
     def __str__(self):
         return f"{self.full_name} (Student)"

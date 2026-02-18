@@ -4,26 +4,25 @@ from django.db import models
 from django.conf import settings
 from django_mongodb_backend.fields import ObjectIdAutoField
 
-# 1. The Authentication User
+# Authentication User
 class CustomUser(AbstractUser):
     id = ObjectIdAutoField(primary_key=True)
 
     def __str__(self):
         return self.username
 
-    # --- ADD THESE PROPERTIES ---
     @property
     def is_student(self):
-        """Returns True if the user has a student profile."""
+        # Returns true if the user has a student profile.
         return hasattr(self, 'students_student_profile')
 
     @property
     def is_teacher(self):
-        """Returns True if the user has a teacher profile."""
-        # Note: You will need a Teacher model in a 'teachers' app for this to work
+        # Returns true if the user has a teacher profile.
         return hasattr(self, 'teachers_teacher_profile')
 
-# 2. The Abstract Base Class (Shared Blueprint)
+# Abstract Base Class (Parent class for Student and Teacher model)
+# See teachers/models.py or students/models.py
 class MentoraBaseUser(models.Model):
     # We reference the CustomUser via settings to avoid circular imports
     user = models.OneToOneField(

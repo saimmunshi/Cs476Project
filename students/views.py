@@ -3,12 +3,9 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 
+# Requires login and checks if the user is a student.
 @login_required
 def student_dashboard_view(request):
-    """
-    Secure view for the student dashboard.
-    Requires login and checks if the user is a student.
-    """
     if not hasattr(request.user, 'students_student_profile'):
         return HttpResponseForbidden("You are not authorized to view the student dashboard. Please log in with a student account.")
 
@@ -18,9 +15,9 @@ def student_dashboard_view(request):
     }
     return render(request, 'dashboard/templates/dashboard.html', context)
 
+# Requires login and checks if the user is a student.
 @login_required
 def student_feedback_view(request):
-    # Requires login and checks if the user is a student.
     if not hasattr(request.user, 'students_student_profile'):
         return HttpResponseForbidden("You are not authorized to view the student feedback page. Please log in with a student account.")
 

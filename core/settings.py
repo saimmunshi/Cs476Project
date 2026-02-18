@@ -64,9 +64,11 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         # DIRS is a LIST. You can have multiple paths here.
         'DIRS': [
-            os.path.join(BASE_DIR, 'users/main/templates'),
-            # ADD THIS LINE to tell Django to also look in your features folder
+            os.path.join(BASE_DIR, 'users/main/templates'), # Changed by Mark: Renamed "registration" to "main"
+
+            # Added by Mark: These line tells Django to also look in the features folders
             os.path.join(BASE_DIR, 'students/features'),
+            os.path.join(BASE_DIR, 'teachers/features'),
         ],
         'APP_DIRS': True, # Keep this True. It's not hurting anything.
         'OPTIONS': {
@@ -84,13 +86,15 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-#Added by Sam: MongoDB conFiguration code takes uri from the env file
+# Added by Sam: MongoDB conFiguration code takes uri from the env file
+# Edited by Mark: changed order because of race condition?
 # --- DATABASE SECTION ---
 DATABASES = {
     'default': {
         'ENGINE': 'django_mongodb_backend',
         'NAME': 'MentoringAppDB',
         'HOST': os.getenv('MONGO_URL'),
+        # DO NOT put DEFAULT_AUTO_FIELD here!
     }
 }
 
@@ -163,11 +167,12 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS =[
 
     ###### Users App Connection#########
-    #Added By Saim Munshi: This is to connect the main base folder to the user Application features in static directory.  
+    # Added By Saim Munshi: This is to connect the main base folder to the user Application features in static directory.  
      os.path.join(BASE_DIR, 'users/main/static'),
 
     ###### Student App Connection#########
-    #Added By Saim Munshi: This is to connect the main base folder to the Student Application features in static directory.  
+    # Added By Saim Munshi: This is to connect the main base folder to the Student Application features in static directory.  
+    # Note from Mark: If you are working on any of these features, you should edit the spelling to be lowercase.
     os.path.join(BASE_DIR, 'students/features/calendar/static'), # Updated spelling
     os.path.join(BASE_DIR, 'students/features/dashboard/static'), # Updated: changed Home to dashboard
     os.path.join(BASE_DIR, 'students/features/Mentors/static'),
@@ -177,7 +182,7 @@ STATICFILES_DIRS =[
     os.path.join(BASE_DIR, 'students/features/feedback/static'), # Added by Mark: Non-empty pages
 
     ###### Teacher App Connection#########
-    #Added By Saim Munshi: This is to connect the main base folder to the Teacher Application features in static directory.  
+    # Added By Saim Munshi: This is to connect the main base folder to the Teacher Application features in static directory.  
     os.path.join(BASE_DIR, 'teachers/features/Calendar/static'), 
     os.path.join(BASE_DIR, 'teachers/features/Home/static'),
     os.path.join(BASE_DIR, 'teachers/features/Create_Task/static'), 
