@@ -8,7 +8,7 @@ from django.urls import reverse_lazy
 from students.models import Student
 from teachers.models import Teacher
 from .models import CustomUser
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, login
 from django.contrib.auth.views import LoginView
 
 # Create your views here.
@@ -60,7 +60,7 @@ def student_register_view(request):
             return render(request, 'student-registration.html', {'error': 'Email already exists'})
 
         try:
-            # 4. Create User
+            # Create User
             user = User.objects.create_user(
                 username=request.POST.get('name'),  # Changed from email to name
                 email=email, 
@@ -85,10 +85,12 @@ def student_register_view(request):
                     profile_image_url=image_url
                 )
             
-            # 6. Login
-            #login(request, user)
-            #print("--- DEBUG: User Logged In. Redirecting... ---")
-            #return redirect('/')
+            # Auto Login
+            login(request, user)
+            if role == 'student':
+                return redirect('student_dashboard') # Note: url names use underscore. See student/urls.py
+            elif role == 'teacher':
+                return redirect('home')  # replace with 'teacher_dashboard' when ready
 
         except Exception as e:
             print(f"--- CRITICAL ERROR DURING SAVE: {e} ---")

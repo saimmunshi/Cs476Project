@@ -23,12 +23,17 @@ from django.contrib.auth import views as auth_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home_view, name ="home"),
+    
+    # Added by Mark: Separated student and teacher registration pages
     path('student-register/', student_register_view, name ="student-register"),
     path("teacher-register/", teacher_register_view, name="teacher-register"),
 
     path('students/', include('students.urls')),
-
+    
+    # Note by Mark: Add this once teachers/urls.py is made and ready
+    # path('teachers/', include('teachers.urls'))
+    
     # Any URL starting with 'accounts/' will be handled by users.urls
-    # Note from Mark: Not sure exactly how this pathing works, but URLS will have /accounts/ in it.
+    # Note from Mark: Not sure exactly how this pathing works, but URLS will have /accounts/ in it via Django authentication
     path('accounts/', include('users.urls')),
 ]

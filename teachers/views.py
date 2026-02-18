@@ -1,6 +1,7 @@
 from django.shortcuts import render
 
 # Create your views here.
+# Note from Mark: This page will have to be very much changed to be in line with students/views.py
 
 """
 Name Function: Home

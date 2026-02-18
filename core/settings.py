@@ -70,7 +70,7 @@ TEMPLATES = [
             os.path.join(BASE_DIR, 'students/features'),
             os.path.join(BASE_DIR, 'teachers/features'),
         ],
-        'APP_DIRS': True, # Keep this True. It's not hurting anything.
+        'APP_DIRS': True, # This allows Django to find templates for different apps
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',

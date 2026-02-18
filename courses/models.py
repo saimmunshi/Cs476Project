@@ -12,10 +12,10 @@ class Course(models.Model):
   id = ObjectIdAutoField(primary_key=True)
   title = models.CharField(max_length=200)
   description = models.TextField()
-  
+
   # RELATIONS
   teacher = models.ForeignKey(
-    'teachers.Teacher', 
+  	'teachers.Teacher', 
     on_delete=models.CASCADE,
     related_name='courses'
   )
@@ -44,7 +44,7 @@ class Task(models.Model):
   
   title = models.CharField(max_length=200)
   description = models.TextField()
-  start_date = due_date = models.DateTimeField(null=True, blank=True)
+  start_date = models.DateTimeField(null=True, blank=True)
   due_date = models.DateTimeField(null=True, blank=True)
   points_possible = models.IntegerField(default=100) # Might be removed, don't need grading.
   
@@ -61,19 +61,26 @@ class TaskSubmission(models.Model):
   id = ObjectIdAutoField(primary_key=True)
   
   task = models.ForeignKey(
-      Task, 
-      on_delete=models.CASCADE,
-      related_name='submissions'
+		Task, 
+		on_delete=models.CASCADE,
+		related_name='submissions'
   )
   student = models.ForeignKey(
-      'students.Student', 
-      on_delete=models.CASCADE,
-      related_name='submissions'
+		'students.Student', 
+		on_delete=models.CASCADE,
+		related_name='submissions'
   )
   
   # The content of the submission
   submission_text = models.TextField(blank=True) 
   file_url = models.URLField(blank=True) # If they upload a file
+
+  # Django char fields are tuples
+  STATUS_CHOICES = [
+    ('pending', 'Pending'),
+    ('reviewed', 'Reviewed'),
+  ]
+  status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
   
   submitted_at = models.DateTimeField(auto_now_add=True)
   
@@ -103,6 +110,7 @@ class TaskFeedback(models.Model):
   comments = models.TextField(blank=True) # Example: "Great job, but check spelling."
   
   graded_at = models.DateTimeField(auto_now_add=True)
+  updated_at = models.DateTimeField(auto_now=True)
 
   def __str__(self):
-      return f"Feedback for {self.submission}"
+    return f"Feedback for {self.submission}"

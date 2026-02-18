@@ -1,7 +1,8 @@
 # users/apps.py
 from django.apps import AppConfig
 
-# Added by Mark: I lowkey have no idea how this works. Will have to look into how this config works.
+# Added by Mark: This config automatically disables Django's persmission system. It needs to
+# be disabled becasue migrating into MongoDB collections does not work with it.
 class UsersConfig(AppConfig):
     name = 'users'
 

@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 
 def main():
     """Run administrative tasks."""
+    # Added by Mark: Added this to ensure env is loaded, but not sure if it's even needed atp
     load_dotenv()
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
     try:
