@@ -1,23 +1,38 @@
+# users/models.py
+from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.conf import settings
+from django_mongodb_backend.fields import ObjectIdAutoField
 
-# Create your models here.
-from django.db import models
+# 1. The Authentication User
+class CustomUser(AbstractUser):
+    id = ObjectIdAutoField(primary_key=True)
 
-# This is a template; it won't create its own collection
+    def __str__(self):
+        return self.username
+
+    # --- ADD THESE PROPERTIES ---
+    @property
+    def is_student(self):
+        """Returns True if the user has a student profile."""
+        return hasattr(self, 'students_student_profile')
+
+    @property
+    def is_teacher(self):
+        """Returns True if the user has a teacher profile."""
+        # Note: You will need a Teacher model in a 'teachers' app for this to work
+        return hasattr(self, 'teachers_teacher_profile')
+
+# 2. The Abstract Base Class (Shared Blueprint)
 class MentoraBaseUser(models.Model):
+    # We reference the CustomUser via settings to avoid circular imports
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE,
+        related_name="%(app_label)s_%(class)s_profile"
+    )
     full_name = models.CharField(max_length=255)
-    email = models.EmailField(unique=True)
-    password = models.CharField(max_length=255)
     profile_image_url = models.URLField(max_length=500, null=True, blank=True)
-
+    
     class Meta:
-        abstract = True # This is the magic line that keeps things separate
-
-# This will create a 'students' collection in Atlas
-class Student(MentoraBaseUser):
-    student_id = models.CharField(max_length=50)
-
-# This will create a 'teachers' collection in Atlas
-class Teacher(MentoraBaseUser):
-    license_number = models.CharField(max_length=50)
-    specialization = models.CharField(max_length=100)
+        abstract = True

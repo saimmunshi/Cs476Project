@@ -14,7 +14,6 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -41,9 +40,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'users', ## Added By Saim Munshi: Login and Registeration 
+    'users.apps.UsersConfig',  # Changed by Mark
     'students', ## Added By Saim Munshi: student application
     'teachers', ## Added By Saim Munshi: teacher application
+    'courses', # Added by Mark
+
 ]
 
 MIDDLEWARE = [
@@ -61,9 +62,13 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        # DIRS tells Django to look for a root 'templates' folder for your Sidebar/Base
-        'DIRS': [os.path.join(BASE_DIR, 'users/registration/templates')], 
-        'APP_DIRS': True, # This allows Django to find students/features/Calender/templates
+        # DIRS is a LIST. You can have multiple paths here.
+        'DIRS': [
+            os.path.join(BASE_DIR, 'users/main/templates'),
+            # ADD THIS LINE to tell Django to also look in your features folder
+            os.path.join(BASE_DIR, 'students/features'),
+        ],
+        'APP_DIRS': True, # Keep this True. It's not hurting anything.
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -84,9 +89,8 @@ WSGI_APPLICATION = 'core.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django_mongodb_backend',
-        'HOST': os.getenv('MONGO_URL'),
         'NAME': 'MentoringAppDB',
-        # DO NOT put DEFAULT_AUTO_FIELD here!
+        'HOST': os.getenv('MONGO_URL'),
     }
 }
 
@@ -160,16 +164,17 @@ STATICFILES_DIRS =[
 
     ###### Users App Connection#########
     #Added By Saim Munshi: This is to connect the main base folder to the user Application features in static directory.  
-     os.path.join(BASE_DIR, 'users/registration/static'),
+     os.path.join(BASE_DIR, 'users/main/static'),
 
     ###### Student App Connection#########
     #Added By Saim Munshi: This is to connect the main base folder to the Student Application features in static directory.  
     os.path.join(BASE_DIR, 'students/features/calendar/static'), # Updated spelling
-    os.path.join(BASE_DIR, 'students/features/Home/static'),
+    os.path.join(BASE_DIR, 'students/features/dashboard/static'), # Updated: changed Home to dashboard
     os.path.join(BASE_DIR, 'students/features/Mentors/static'),
     os.path.join(BASE_DIR, 'students/features/Setting/static'),
     os.path.join(BASE_DIR, 'students/features/Skills/static'),
     os.path.join(BASE_DIR, 'students/features/Tasks/static'),
+    os.path.join(BASE_DIR, 'students/features/feedback/static'), # Added by Mark: Non-empty pages
 
     ###### Teacher App Connection#########
     #Added By Saim Munshi: This is to connect the main base folder to the Teacher Application features in static directory.  
@@ -180,3 +185,9 @@ STATICFILES_DIRS =[
     os.path.join(BASE_DIR, 'teachers/features/Meeting/static'),
     os.path.join(BASE_DIR, 'teachers/features/Setting/static'),
 ]
+
+# Added by Mark: Testing login sessions and user permissions
+AUTH_USER_MODEL = 'users.CustomUser' 
+LOGIN_URL = "login"
+LOGIN_REDIRECT_URL = "home"
+LOGOUT_REDIRECT_URL = "home"

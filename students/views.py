@@ -1,49 +1,43 @@
+# students/views.py
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseForbidden
 
-# Create your views here.
-"""
-Name Function: Home
-type: Function 
-Purpose:It is used connect django with home html file through an http request
+@login_required
+def student_dashboard_view(request):
+    """
+    Secure view for the student dashboard.
+    Requires login and checks if the user is a student.
+    """
+    if not hasattr(request.user, 'students_student_profile'):
+        return HttpResponseForbidden("You are not authorized to view the student dashboard. Please log in with a student account.")
 
-"""
-def Home(request):  
-    return render(request, '\Home\templates\Home.html')
+    student_profile = request.user.students_student_profile
+    context = {
+        'student': student_profile
+    }
+    return render(request, 'dashboard/templates/dashboard.html', context)
 
-"""
-Name Function: Calender
-type: Function 
-Purpose:It is used connect django with Calender html file through an http request
+@login_required
+def student_feedback_view(request):
+    # Requires login and checks if the user is a student.
+    if not hasattr(request.user, 'students_student_profile'):
+        return HttpResponseForbidden("You are not authorized to view the student feedback page. Please log in with a student account.")
 
-"""
-def Calender(request):  
-    return render(request, '\Home\templates\Calender.html')
+    student_profile = request.user.students_student_profile
+    context = {
+        'student': student_profile
+    }
+    return render(request, 'feedback/templates/feedback.html', context)
 
-"""
-Name Function: Mentor
-type: Function 
-Purpose:It is used connect django with Calender Mentor file through an http request
+def calendar_view(request):
+    return render(request, 'Home/templates/Calender.html')
 
-"""
-def Mentor(request):  
-    return render(request, '\Mentors\templates\Mentor.html')
+def mentors_view(request):
+    return render(request, 'Mentors/templates/Mentor.html')
 
+def skills_view(request):
+    return render(request, 'Skills/templates/Skills.html')
 
-"""
-Name Function: Skills
-type: Function 
-Purpose:It is used connect django with Calender Skills file through an http request
-
-"""
-def Skills(request):  
-    return render(request, '\Skills\templates\Skills.html')
-
-
-"""
-Name Function: Tasks
-type: Function 
-Purpose:It is used connect django with Calender Tasks file through an http request
-
-"""
-def Tasks(request):  
-    return render(request, '\features\Tasks\Tasks.html')
+def tasks_view(request):
+    return render(request, 'features/Tasks/Tasks.html')
