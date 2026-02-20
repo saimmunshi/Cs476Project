@@ -15,10 +15,25 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
-from users.views import register_view
+from django.urls import path, include
+from users.views import home_view, student_register_view, teacher_register_view
+
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', register_view, name ="register"),
+    path('', home_view, name ="home"),
+    
+    # Added by Mark: Separated student and teacher registration pages
+    path('student-register/', student_register_view, name ="student-register"),
+    path("teacher-register/", teacher_register_view, name="teacher-register"),
+
+    path('students/', include('students.urls')),
+    
+    # Note by Mark: Add this once teachers/urls.py is made and ready
+    # path('teachers/', include('teachers.urls'))
+    
+    # Any URL starting with 'accounts/' will be handled by users.urls
+    # Note from Mark: Not sure exactly how this pathing works, but URLS will have /accounts/ in it via Django authentication
+    path('accounts/', include('users.urls')),
 ]
