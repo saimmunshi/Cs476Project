@@ -1,15 +1,19 @@
 from django.shortcuts import render
+#from django.contrib.auth.decorators import login_required
 
 # Create your views here.
+
+#@login_required
+
 
 """
 Name Function: Home
 type: Function 
 Purpose: Connects to the Teacher Home dashboard
 """
-def Home(request):  
+def teacherHome(request):  
     # Looks in teachers/features/Home/templates/Home/Home.html
-    return render(request, 'Home/Home.html')
+    return render(request, 'TeacherHomePage.html')
 
 """
 Name Function: Calendar

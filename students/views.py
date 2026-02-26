@@ -7,8 +7,8 @@ type: Function
 Purpose:It is used connect django with home html file through an http request
 
 """
-def Home(request):  
-    return render(request, '\Home\templates\Home.html')
+def studentHome(request):  
+    return render(request, 'StudentHomePage.html')
 
 """
 Name Function: Calender
@@ -35,8 +35,8 @@ type: Function
 Purpose:It is used connect django with Calender Skills file through an http request
 
 """
-def Skills(request):  
-    return render(request, '\Skills\templates\Skills.html')
+def Progress(request):  
+    return render(request, '\Progess\templates\Progess.html')
 
 
 """
@@ -45,5 +45,5 @@ type: Function
 Purpose:It is used connect django with Calender Tasks file through an http request
 
 """
-def Tasks(request):  
-    return render(request, '\features\Tasks\Tasks.html')
+def Courses(request):  
+    return render(request, 'Courses.html')

@@ -16,9 +16,20 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from users.views import register_view
-
+from users.views import teacher_register_view # connects the views function that returns the register_view
+from users.views import student_register_view 
+from users.views import main_page_view  #connects the views function that returns the main_page_view
+from users.views import signin_page_view #connects the views function that returns the login_page_view
+from students.views import studentHome #connects student app view and imports home function connecting to the home function
+from students.views import Courses # connects student app view and imports home function connecting to the Tasks function
+from teachers.views import teacherHome #connects teachers app view and imports home function connecting to the home function
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', register_view, name ="register"),
+    path('', main_page_view, name="home"),
+    path('register/student/', student_register_view, name='student_register_view'),
+    path('register/teacher/', teacher_register_view, name='teacher_register_view'),
+    path('login/', signin_page_view, name='signin_page_view'),
+    path('student/home/', studentHome, name='student_home'),
+    path('teacher/home/', teacherHome, name='teacher_home'),
+    path('student/Courses/', Courses, name='Courses'),
 ]

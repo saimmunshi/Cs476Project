@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 import os
 from pathlib import Path
 from dotenv import load_dotenv
-
+import sys
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -35,15 +35,16 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'users', ## Added By Saim Munshi: Login and Registeration 
-    'students', ## Added By Saim Munshi: student application
-    'teachers', ## Added By Saim Munshi: teacher application
+    'users', 
+    'teachers',
+    'students',
 ]
 
 MIDDLEWARE = [
@@ -62,7 +63,22 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         # DIRS tells Django to look for a root 'templates' folder for your Sidebar/Base
-        'DIRS': [os.path.join(BASE_DIR, 'users/registration/templates')], 
+        'DIRS': [
+            BASE_DIR / 'users' / 'TeacherRegistration' / 'templates',
+            BASE_DIR / 'users' / 'StudentRegistration' / 'templates',
+            BASE_DIR / 'users' / 'SignInPage' / 'templates',
+            BASE_DIR / 'users' / 'MainHome' / 'templates',
+
+            #Student App Connection Logic
+            BASE_DIR / 'students' / 'BaseStudent'/ 'templates',
+            BASE_DIR / 'students' / 'features' / 'Courses' / 'templates',
+            BASE_DIR / 'students' / 'features' / 'StudentHomePage' / 'templates',
+
+            #Teacher App Connection Logic
+            BASE_DIR / 'teachers' / 'BaseTeacher'/ 'templates',
+            BASE_DIR / 'teachers' / 'features' / 'TeacherHomePage' / 'templates',
+            BASE_DIR / 'teachers' / 'features' / 'Create_Task' / 'templates',
+            ], 
         'APP_DIRS': True, # This allows Django to find students/features/Calender/templates
         'OPTIONS': {
             'context_processors': [
@@ -81,6 +97,9 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 #Added by Sam: MongoDB conFiguration code takes uri from the env file
 # --- DATABASE SECTION ---
+
+AUTH_USER_MODEL = 'users.CustomUser'
+
 DATABASES = {
     'default': {
         'ENGINE': 'django_mongodb_backend',
@@ -90,6 +109,13 @@ DATABASES = {
     }
 }
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+
+
+# Disable default permissions
 
 # DMedia-Storage
 #Added by Saim: this so Django knows to use the URL from your .env
@@ -149,34 +175,56 @@ USE_I18N = True
 
 USE_TZ = True
 
+# Where to go after a successful manual login if no 'next' parameter is present
+LOGIN_REDIRECT_URL = 'teacher_home' 
+
+# Where the login page lives
+LOGIN_URL = 'signin_page_view'
+
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
-
+STATIC_URL = '/static/'
 #Added By Saim Munshi: combines based folder to path to the feature directories 
+STATIC_ROOT = os.path.join(BASE_DIR, 'static_root')
+
 STATICFILES_DIRS =[
 
     ###### Users App Connection#########
-    #Added By Saim Munshi: This is to connect the main base folder to the user Application features in static directory.  
-     os.path.join(BASE_DIR, 'users/registration/static'),
+    #Added By Saim Munshi: This is to connect the main base folder to the user Login Page Application features in static directory.  
+    
+    os.path.join(BASE_DIR, 'users/SignInPage/static'),
+    #Added By Saim Munshi: This is to connect the main base folder to the user Main Page Application features in static directory.  
 
+    os.path.join(BASE_DIR, 'users/MainHome/static'),
+
+
+    #Added By Saim Munshi: This is to connect the main base folder to the user Registration Application features in static directory.  
+     os.path.join(BASE_DIR, 'users/TeacherRegistration/static'),
+     os.path.join(BASE_DIR, 'users/StudentRegistration/static'),
     ###### Student App Connection#########
     #Added By Saim Munshi: This is to connect the main base folder to the Student Application features in static directory.  
+    os.path.join(BASE_DIR, 'students/BaseStudent/static'),
     os.path.join(BASE_DIR, 'students/features/calendar/static'), # Updated spelling
-    os.path.join(BASE_DIR, 'students/features/Home/static'),
+    os.path.join(BASE_DIR, 'students/features/StudentHomePage/static'),
     os.path.join(BASE_DIR, 'students/features/Mentors/static'),
     os.path.join(BASE_DIR, 'students/features/Setting/static'),
-    os.path.join(BASE_DIR, 'students/features/Skills/static'),
-    os.path.join(BASE_DIR, 'students/features/Tasks/static'),
+    os.path.join(BASE_DIR, 'students/features/Progress/static'),
+    os.path.join(BASE_DIR, 'students/features/Courses/static'),
 
     ###### Teacher App Connection#########
-    #Added By Saim Munshi: This is to connect the main base folder to the Teacher Application features in static directory.  
+    #Added By Saim Munshi: This is to connect the main base folder to the Teacher Application features in static directory. 
+    os.path.join(BASE_DIR, 'teachers/BaseTeacher/static'),
     os.path.join(BASE_DIR, 'teachers/features/Calendar/static'), 
-    os.path.join(BASE_DIR, 'teachers/features/Home/static'),
+    os.path.join(BASE_DIR, 'teachers/features/TeacherHomePage/static'),
     os.path.join(BASE_DIR, 'teachers/features/Create_Task/static'), 
     os.path.join(BASE_DIR, 'teachers/features/My_Student/static'), 
     os.path.join(BASE_DIR, 'teachers/features/Meeting/static'),
     os.path.join(BASE_DIR, 'teachers/features/Setting/static'),
+    os.path.join(BASE_DIR, 'teachers/BaseTeacher/static'),
+
 ]
+
+from django.core.servers.basehttp import WSGIServer
