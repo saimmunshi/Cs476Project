@@ -31,7 +31,8 @@
         {% else %}
         <a href="{% url 'student-register' %}">Sign up as student</a><br>
         <a href="{% url 'teacher-register' %}">Sign up as mentor</a><br>
-
+            <!--Added by Matthew/Spooky as a temp link for easy testing purposes-->
+        <a href="{% url 'Feedback' %}">Go to Feedback</a>
         <p>Already have an account?</p>
         <p><a href="{% url 'login' %}">Login here.</a></p>
         {% endif %}

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mentora - Feedback</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+
+<div class="feedbackPage">
+
+  <aside class="sidebar">
+    <h2>Mentora</h2>
+    <ul>
+      <li>Dashboard</li>
+      <li>Tasks</li>
+      <li class="active">Feedback</li>
+      <li>Calendar</li>
+      <li>Settings</li>
+    </ul>
+  </aside>
+
+  <main class="page">
+    <div class="mainContainer">
+      <div class="containerHeader">
+        <h3>Write Feedback</h3>
+      </div>
+
+      <form id="feedbackForm">
+        <label for="selectStudent">Student:</label>
+        <select id="selectStudent" required>
+        <option value="">Select Student</option>
+        </select>
+
+        <label for="selectTask">Task:</label>
+        <select id="selectTask" required>
+        <option value="">Select Task</option>
+        </select>
+
+        <label for="feedbackType">Feedback Type:</label>
+        <select id="feedbackType" required>
+          <option value="General">General</option>
+          <option value="Performance">Performance</option>
+          <option value="Improvement">Improvement</option>
+        </select>
+
+        <label for="feedbackText">Feedback:</label>
+        <textarea id="feedbackText" placeholder="Write feedback here..." required></textarea>
+        <label for="imageInput">Attachments:</label>
+        <input type="file" id="imageInput" multiple>
+        <button type="submit">Submit Feedback</button>
+      </form>
+    </div>
+
+    <div class="mainContainer">
+      <div class="containerHeader">
+        <h3>My Feedback</h3>
+      </div>
+      <div id="feedbackList"></div>
+    </div>
+
+    <div class="mainContainer">
+      <div class="containerHeader">
+        <h3>Student Notifications</h3>
+      </div>
+      <div id="studentNotificationList"></div>
+    </div>
+  </main>
+</div>
+<script src="{% static 'js/feedback.js' %}" defer></script>
+</body>
+</html>

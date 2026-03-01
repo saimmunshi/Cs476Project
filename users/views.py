@@ -118,5 +118,7 @@ class CustomLoginView(LoginView):
         else:
             return reverse_lazy('home')
 
-def home(request):
-    return render(request, 'home.html')
+
+def Feedback(request):  
+    #Added by Matthew/Spooky so when called returns index.html.
+    return render(request, 'index.html')

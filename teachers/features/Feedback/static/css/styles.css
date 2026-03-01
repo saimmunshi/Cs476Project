@@ -1,0 +1,117 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+  }
+  
+  .feedbackPage {
+    display: flex;
+    min-height: 100vh;
+  }
+  
+  .sidebar {
+    width: 240px;
+    background: #ffffff;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+  }
+  
+  .sidebar h2 {
+    margin-bottom: 20px;
+  }
+  
+  .sidebar ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .sidebar li {
+    padding: 10px;
+    margin-bottom: 5px;
+    cursor: pointer;
+    border-radius: 6px;
+  }
+  
+  .sidebar li.active,
+  .sidebar li:hover {
+    background: #dce8ff;
+  }
+  
+  .page {
+    flex: 1;
+    padding: 40px 60px;
+    max-width: 1200px;
+    margin: 0 auto;
+    background: #f4f6f9;
+  }
+  
+  .mainContainer {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+  }
+  
+  .containerHeader {
+    margin-bottom: 15px;
+  }
+  
+  textarea {
+    width: 100%;
+    height: 100px;
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    resize: none;
+  }
+  
+  select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+  }
+  
+  button {
+    margin-top: 10px;
+    padding: 10px 15px;
+    border: none;
+    background: #4a90e2;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background: #357bd8;
+  }
+  
+  .feedback-item {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .feedback-item:last-child {
+    border-bottom: none;
+  }
+  
+  .feedback-meta {
+    font-size: 12px;
+    color: #777;
+    margin-bottom: 5px;
+  }
+  
+  .feedback-actions button {
+    margin-right: 5px;
+    background: #eee;
+    color: #333;
+  }
+  
+  .feedback-actions button:hover {
+    background: #ddd;
+  }

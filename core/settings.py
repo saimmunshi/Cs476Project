@@ -65,10 +65,12 @@ TEMPLATES = [
         # DIRS is a LIST. You can have multiple paths here.
         'DIRS': [
             os.path.join(BASE_DIR, 'users/main/templates'), # Changed by Mark: Renamed "registration" to "main"
-
+            # Added by Matthew/Spooky: Used to create link here.
+            os.path.join(BASE_DIR, 'teachers/features/Feedback/templates'),
             # Added by Mark: These line tells Django to also look in the features folders
             os.path.join(BASE_DIR, 'students/features'),
             os.path.join(BASE_DIR, 'teachers/features'),
+            os.path.join(BASE_DIR, 'teachers/features/Feedback/static'),
         ],
         'APP_DIRS': True, # This allows Django to find templates for different apps
         'OPTIONS': {
@@ -161,7 +163,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 #Added By Saim Munshi: combines based folder to path to the feature directories 
 STATICFILES_DIRS =[
@@ -189,6 +191,8 @@ STATICFILES_DIRS =[
     os.path.join(BASE_DIR, 'teachers/features/My_Student/static'), 
     os.path.join(BASE_DIR, 'teachers/features/Meeting/static'),
     os.path.join(BASE_DIR, 'teachers/features/Setting/static'),
+        #Added by Matthew/Spooky: This is used to connect to Feedback files.
+    os.path.join(BASE_DIR, 'teachers/features/Feedback/static'),
 ]
 
 # Added by Mark: Testing login sessions and user permissions
