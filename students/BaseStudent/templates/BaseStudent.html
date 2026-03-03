@@ -65,13 +65,18 @@
                 </a>
 
                 <!-- This class code chuck checks of the request is from made to Coursess html file by the Courses function in views if so add the active tag for nav link else leave it as navlink-->
-                <a href="{% url 'my-courses' %}" class="nav-link {% if request.resolver_match.url_name == 'Courses' %}active{% endif %}">
+                <a href="{% url 'my-courses' %}" class="nav-link {% if request.resolver_match.url_name == 'my-courses' %}active{% endif %}">
                     <i class="bi bi-list-task"></i> My Courses
                 </a>
 
                 <!-- This class code chuck checks of the request is from made to Coursess html file by the Courses function in views if so add the active tag for nav link else leave it as navlink-->
-                <a href="{% url 'course-browser' %}" class="nav-link {% if request.resolver_match.url_name == 'Courses' %}active{% endif %}">
+                <a href="{% url 'course-browser' %}" class="nav-link {% if request.resolver_match.url_name == 'course-browser' %}active{% endif %}">
                     <i class="bi bi-search"></i> Course Browser
+                </a>
+
+                <!-- This class code chuck checks of the request is from made to Coursess html file by the Courses function in views if so add the active tag for nav link else leave it as navlink-->
+                <a href="{% url 'student-tasks' %}" class="nav-link {% if request.resolver_match.url_name == 'student-tasks' %}active{% endif %}">
+                    <i class="bi bi-clipboard2-check"></i> Tasks
                 </a>
 
                 <a href="#" class="nav-link">

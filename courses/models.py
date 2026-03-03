@@ -48,6 +48,11 @@ class Task(models.Model):
   start_date = models.DateTimeField(null=True, blank=True)
   due_date = models.DateTimeField(null=True, blank=True)
   points_possible = models.IntegerField(default=100) # Might be removed, don't need grading.
+  assigned_students = models.ManyToManyField(
+      'students.Student',
+      related_name='assigned_tasks',
+      blank=True
+  )
   
   created_at = models.DateTimeField(auto_now_add=True)
 

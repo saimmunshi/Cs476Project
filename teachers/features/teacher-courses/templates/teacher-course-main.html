@@ -27,6 +27,28 @@
       </ul>
   </div>
 
+  <!-- Course Tasks -->
+  <div class="card mt-4 p-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3>Course Tasks</h3>
+          <a href="{% url 'create-task' %}" class="btn btn-sm btn-primary">+ New Task</a>
+      </div>
+      <div class="list-group">
+          <!-- .tasks.all works because of the related_name='tasks' in your Course model! -->
+          {% for task in course.tasks.all %}
+              <a href="{% url 'teacher-task-submissions' task.id %}" class="list-group-item list-group-item-action">
+                  <div class="d-flex w-100 justify-content-between">
+                      <h5 class="mb-1">{{ task.title }}</h5>
+                      <small>Due: {{ task.due_date|default:"No due date" }}</small>
+                  </div>
+                  <small class="text-muted">Assigned to {{ task.assigned_students.count }} students</small>
+              </a>
+          {% empty %}
+              <p class="text-muted">No tasks created for this course yet.</p>
+          {% endfor %}
+      </div>
+  </div>
+
   <div class="mt-4">
       <!-- Back Button -->
       <a href="{% url 'teacher-course-list' %}" class="btn btn-secondary">Back to Courses</a>

@@ -15,4 +15,8 @@ urlpatterns = [
     path('course/<str:course_id>/join/', views.joinCourse, name='join-course'), 
     # Hidden path just for processing the 'Leave' button POST request
     path('course/<str:course_id>/leave/', views.leaveCourse, name='leave-course'),
+    
+    # Task URLS
+    path('tasks/', views.studentTasks, name='student-tasks'),
+    path('tasks/<str:task_id>/', views.studentTaskSubmit, name='student-task-submit'),
 ]

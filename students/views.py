@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden, HttpResponseBadRequest
-from courses.models import Course
+from courses.models import Course, Task, TaskSubmission
+import cloudinary.uploader  # For task submission
 
 # Create your views here.
 """
@@ -127,3 +128,84 @@ def leaveCourse(request, course_id):
         return redirect('my-courses')
     
     return HttpResponseBadRequest("Invalid Request")
+
+"""
+Task Pages
+"""
+@login_required
+def studentTasks(request):
+    student = get_student_profile(request.user)
+    if not student:
+        return HttpResponseForbidden("You must be logged in as a student.")
+
+    # 1. Get all tasks specifically assigned to this student
+    tasks = Task.objects.filter(assigned_students=student).order_by('due_date')
+
+    # 2. Package the tasks with their submission status so the HTML can display "Pending" vs "Submitted"
+    task_data = []
+    for t in tasks:
+        # Check if a submission already exists for this task + student combination
+        submission = TaskSubmission.objects.filter(task=t, student=student).first()
+        task_data.append({
+            'task': t,
+            'status': submission.status if submission else 'Not Submitted',
+            'is_submitted': bool(submission)
+        })
+
+    context = {'task_data': task_data}
+    return render(request, 'tasks/templates/student-tasks.html', context)
+
+@login_required
+def studentTaskSubmit(request, task_id):
+    student = get_student_profile(request.user)
+    if not student:
+        return HttpResponseForbidden("You must be logged in as a student.")
+
+    task = get_object_or_404(Task, id=task_id, assigned_students=student)
+    submission = TaskSubmission.objects.filter(task=task, student=student).first()
+
+    if request.method == "POST":
+        submission_text = request.POST.get('submission_text', '')
+        media_file = request.FILES.get('attached_file')
+        
+        # Keep the existing URL unless they upload a new file
+        uploaded_file_url = submission.file_url if submission else ""
+
+        # Cloudinary Upload Logic matches your registration view!
+        if media_file:
+            try:
+                # resource_type="auto" is REQUIRED for Cloudinary to accept videos!
+                upload_result = cloudinary.uploader.upload(
+                    media_file, 
+                    folder="submission_files",
+                    resource_type="auto" 
+                )
+                uploaded_file_url = upload_result.get('secure_url')
+                print(f"Task Submit: Cloudinary Success: {uploaded_file_url}")
+            except Exception as e:
+                print(f"Task Submit: Cloudinary Error: {e}")
+                # Optional: you could use messages.error here to tell the user it failed
+
+        if submission:
+            # Update existing submission
+            submission.submission_text = submission_text
+            if uploaded_file_url: 
+                submission.file_url = uploaded_file_url
+            submission.save()
+        else:
+            # Create a brand new submission
+            TaskSubmission.objects.create(
+                task=task,
+                student=student,
+                submission_text=submission_text,
+                file_url=uploaded_file_url,  # Save the secure_url string!
+                status='pending'
+            )
+        
+        return redirect('student-tasks')
+
+    context = {
+        'task': task,
+        'submission': submission
+    }
+    return render(request, 'tasks/templates/student-task-submit.html', context)

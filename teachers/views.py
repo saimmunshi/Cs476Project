@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from courses.models import Course   # Import the Course model
+from courses.models import Course, Task, TaskSubmission, TaskFeedback
 from teachers.models import Teacher # Import the Teacher model
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
@@ -123,15 +123,6 @@ def My_Student(request):
     return render(request, 'My_Student/templates/My_Student.html')
 
 """
-Name Function: Create_Task
-type: Function 
-Purpose: Connects to the Task creation feature
-"""
-def Create_Task(request):  
-    # Looks in teachers/features/Create_Task/templates/Create_Task/Create_Task.html
-    return render(request, 'Create_Task/Create_Task.html')
-
-"""
 Name Function: Meeting
 type: Function 
 Purpose: Connects to the Meeting/Video call feature
@@ -139,3 +130,132 @@ Purpose: Connects to the Meeting/Video call feature
 def Meeting(request):  
     # Looks in teachers/features/Meeting/templates/Meeting/Meeting.html
     return render(request, 'Meeting/Meeting.html')
+
+"""
+Task Stuff
+"""
+@login_required
+def Create_Task(request):  
+    if not getattr(request.user, 'is_teacher', False):
+        return HttpResponseForbidden("You are not authorized.")
+    
+    try:
+        current_teacher = request.user.teachers_teacher_profile
+    except AttributeError:
+        return HttpResponseForbidden("Teacher profile not found.")
+
+    if request.method == "POST":
+        course_id = request.POST.get('course')
+        title = request.POST.get('title')
+        description = request.POST.get('description')
+        start_date = request.POST.get('start_date') or None 
+        due_date = request.POST.get('due_date') or None
+        student_ids = request.POST.getlist('students') 
+
+        course = get_object_or_404(Course, id=course_id, teacher=current_teacher)
+
+        new_task = Task.objects.create(
+            course=course,
+            title=title,
+            description=description,
+            start_date=start_date,
+            due_date=due_date
+        )
+
+        if student_ids:
+            new_task.assigned_students.set(student_ids)
+
+        return redirect('teacher_home')
+
+    courses = Course.objects.filter(teacher=current_teacher)
+    
+    course_students_map = {}
+    for c in courses:
+        course_students_map[str(c.id)] = [
+            {'id': str(s.id), 'name': s.full_name} for s in c.students.all()
+        ]
+
+    context = {
+        'courses': courses,
+        # 2. Just pass the normal python dictionary!
+        'course_students_map': course_students_map 
+    }
+    return render(request, 'tasks/templates/create-task.html', context)
+
+"""
+View Submissions Page
+"""
+@login_required
+def teacherTaskSubmissions(request, task_id):
+    if not getattr(request.user, 'is_teacher', False):
+        return HttpResponseForbidden("You are not authorized.")
+    try:
+        current_teacher = request.user.teachers_teacher_profile
+    except AttributeError:
+        return HttpResponseForbidden("Teacher profile not found.")
+
+    # Get the task, ensure it belongs to this teacher
+    task = get_object_or_404(Task, id=task_id, course__teacher=current_teacher)
+    
+    # Get all assigned students and attach their submission if it exists
+    student_data = []
+    for student in task.assigned_students.all():
+        submission = TaskSubmission.objects.filter(task=task, student=student).first()
+        student_data.append({
+            'student': student,
+            'submission': submission,
+        })
+
+    context = {
+        'task': task,
+        'student_data': student_data
+    }
+    return render(request, 'tasks/templates/teacher-task-submissions.html', context)
+
+"""
+Feedback Page
+"""
+@login_required
+def teacherFeedback(request, submission_id):
+    if not getattr(request.user, 'is_teacher', False):
+        return HttpResponseForbidden("You are not authorized.")
+    try:
+        current_teacher = request.user.teachers_teacher_profile
+    except AttributeError:
+        return HttpResponseForbidden("Teacher profile not found.")
+
+    # Get the specific submission
+    submission = get_object_or_404(TaskSubmission, id=submission_id, task__course__teacher=current_teacher)
+    
+    # Get existing feedback if the teacher is editing a previous grade
+    feedback = TaskFeedback.objects.filter(submission=submission).first()
+
+    if request.method == "POST":
+        grade = request.POST.get('grade')
+        comments = request.POST.get('comments', '')
+
+        if feedback:
+            # Update existing feedback
+            feedback.grade = grade
+            feedback.comments = comments
+            feedback.save()
+        else:
+            # Create new feedback
+            TaskFeedback.objects.create(
+                submission=submission,
+                grade=grade,
+                comments=comments
+            )
+        
+        # Mark the submission as reviewed!
+        submission.status = 'reviewed'
+        submission.save()
+
+        # Redirect back to the list of submissions for this task
+        return redirect('teacher-task-submissions', task_id=submission.task.id)
+
+    context = {
+        'submission': submission,
+        'feedback': feedback
+    }
+    return render(request, 'tasks/templates/teacher-feedback.html', context)

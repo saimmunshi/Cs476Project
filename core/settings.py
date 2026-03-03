@@ -242,7 +242,7 @@ STATICFILES_DIRS =[
     os.path.join(BASE_DIR, 'teachers/features/Calendar/static'), 
     os.path.join(BASE_DIR, 'teachers/features/teacher-courses/static'), 
     os.path.join(BASE_DIR, 'teachers/features/TeacherHomePage/static'),
-    os.path.join(BASE_DIR, 'teachers/features/Create_Task/static'), 
+    os.path.join(BASE_DIR, 'teachers/features/tasks/static'), 
     os.path.join(BASE_DIR, 'teachers/features/My_Student/static'), 
     os.path.join(BASE_DIR, 'teachers/features/Setting/static'),
     os.path.join(BASE_DIR, 'teachers/BaseTeacher/static'),
