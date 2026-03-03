@@ -22,6 +22,8 @@ def teacherHome(request):
 
 """
 Added by Mark: Course List page
+Notes: Queries the database to obtain all courses under the logged in teacher.
+       It passes the queried Courses as an object called "context" to the rendered page.
 """
 @login_required
 def teacherCourseList(request):  
@@ -45,6 +47,8 @@ def teacherCourseList(request):
 
 """
 Added by Mark: Create Course
+Notes: Uses form fields from create-course.html to create a new Course object in MongoDB.
+       You likely won't need to change anything here if working on front-end.
 """
 @login_required
 def teacherCreateCourse(request):  
@@ -82,7 +86,9 @@ def teacherCreateCourse(request):
     return render(request, 'teacher-courses/templates/create-course.html')
 
 """
-Added by Mark: Create Course
+Added by Mark: Course Main Page
+Notes: This view is for obtaining a specific Course object under the current logged in teacher.
+       It passes the queried Courses as an object called "context" to the rendered page.
 """
 @login_required
 def teacherCourseMain(request, course_id):
@@ -113,26 +119,22 @@ def Calendar(request):
     # Looks in teachers/features/Calendar/templates/Calendar/Calendar.html
     return render(request, 'Calendar/Calendar.html')
 
-"""
-Name Function: My_Student
-type: Function 
-Purpose: Connects to the My Student management feature
-"""
+
 def My_Student(request):  
     # Looks in teachers/features/My_Student/templates/My_Student/My_Student.html
     return render(request, 'My_Student/templates/My_Student.html')
 
-"""
-Name Function: Meeting
-type: Function 
-Purpose: Connects to the Meeting/Video call feature
-"""
+
 def Meeting(request):  
     # Looks in teachers/features/Meeting/templates/Meeting/Meeting.html
-    return render(request, 'Meeting/Meeting.html')
+    return render(request, 'Meeting/templates/Meeting.html')
+
+""" -------------------------- Task Functions ------------------------------"""
 
 """
-Task Stuff
+Added by Mark: Create Task
+Notes: This view uses the data from the POST form in create-task.html to create a Task object.
+       To note, a single task can be given to multiple students at once which is why it uses a list of student ids.
 """
 @login_required
 def Create_Task(request):  
@@ -183,7 +185,8 @@ def Create_Task(request):
     return render(request, 'tasks/templates/create-task.html', context)
 
 """
-View Submissions Page
+Added by Mark: View Submissions Page
+Notes: A page for seeing all the submissions attached to a specific task. Can lead to a Give Feedback Page
 """
 @login_required
 def teacherTaskSubmissions(request, task_id):
@@ -213,7 +216,8 @@ def teacherTaskSubmissions(request, task_id):
     return render(request, 'tasks/templates/teacher-task-submissions.html', context)
 
 """
-Feedback Page
+Added by Mark: Give Feedback Page
+Notes: A page for giving feedback on a specific task.
 """
 @login_required
 def teacherFeedback(request, submission_id):

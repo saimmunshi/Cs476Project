@@ -5,48 +5,33 @@ from courses.models import Course, Task, TaskSubmission
 import cloudinary.uploader  # For task submission
 
 # Create your views here.
+
 """
 Name Function: Home
 type: Function 
 Purpose:It is used connect django with home html file through an http request
-
 """
 def studentHome(request):  
     return render(request, 'StudentHomePage/templates/StudentHomePage.html')
+
 """
 Name Function: Calender
 type: Function 
 Purpose:It is used connect django with Calender html file through an http request
-
 """
 def Calender(request):  
-    return render(request, '\Home\templates\Calender.html')
+    return render(request, '/Home/templates/Calender.html')
 
-"""
-Name Function: Mentor
-type: Function 
-Purpose:It is used connect django with Calender Mentor file through an http request
-
-"""
 def Mentor(request):  
-    return render(request, '\Mentors\templates\Mentor.html')
+    return render(request, '/Mentors/templates/Mentor.html')
 
-
-"""
-Name Function: Skills
-type: Function 
-Purpose:It is used connect django with Calender Skills file through an http request
-
-"""
 def Progress(request):  
-    return render(request, '\Progess\templates\Progess.html')
+    return render(request, '/Progess/templates/Progess.html')
 
+""" ------------------------------ Student Courses Views/Functions ------------------------------ """
+# Note: Below are all the Course related functionality on the student's side.
 
-"""
-Student Courses Views and Functions:
-- Mark: Below are all the Course related functionality on the student's side
-"""
-# Helper function to check auth and get the student profile
+# Helper function to check auth and get the student profile. This is reused throughout the views.
 def get_student_profile(user):
     if not getattr(user, 'is_student', False):
         return None
@@ -56,6 +41,10 @@ def get_student_profile(user):
     except AttributeError:
         return None
 
+"""
+Added by Mark: Course Browser Page
+Notes: A page for seeing all available courses and allows a student to enroll into it.
+"""
 @login_required
 def courseBrowser(request):
     student = get_student_profile(request.user)
@@ -67,9 +56,11 @@ def courseBrowser(request):
         'courses': courses,
         'student': student  # Passing student so we can check if they already joined a course
     }
-    # Note: Update template path if needed based on your folder structure
     return render(request, 'Courses/templates/course-browser.html', context)
 
+"""
+Added by Mark: A function to link the current student to the course they clicked enroll onto.
+"""
 @login_required
 def joinCourse(request, course_id):
     student = get_student_profile(request.user)
@@ -87,6 +78,10 @@ def joinCourse(request, course_id):
     
     return HttpResponseBadRequest("Invalid Request")
 
+"""
+Added by Mark: Student Course List Page
+Notes: Shows all currently enrolled courses for the logged in student. Can lead to a specific Course Main page.
+"""
 @login_required
 def myCourses(request):
     student = get_student_profile(request.user)
@@ -99,6 +94,10 @@ def myCourses(request):
     context = {'courses': courses}
     return render(request, 'Courses/templates/my-courses.html', context)
 
+"""
+Added by Mark: Course Page
+Notes: Student mirror of a Course Details page. 
+"""
 @login_required
 def studentCourseMain(request, course_id):
     student = get_student_profile(request.user)
@@ -111,6 +110,9 @@ def studentCourseMain(request, course_id):
     context = {'course': course}
     return render(request, 'Courses/templates/student-course-main.html', context)
 
+"""
+Added by Mark: Function that removes currently logged in student from a specific course
+"""
 @login_required
 def leaveCourse(request, course_id):
     student = get_student_profile(request.user)
@@ -129,8 +131,11 @@ def leaveCourse(request, course_id):
     
     return HttpResponseBadRequest("Invalid Request")
 
+""" -------------------------- Task Views/Functions ------------------------------ """
+
 """
-Task Pages
+Added by Mark: Tasks Page
+Notes: Page that displays all the tasks a student has. Can lead to Task Submission page.
 """
 @login_required
 def studentTasks(request):
@@ -155,6 +160,10 @@ def studentTasks(request):
     context = {'task_data': task_data}
     return render(request, 'tasks/templates/student-tasks.html', context)
 
+"""
+Added by Mark: Task Submission Page
+Notes: Page for adding a submission for a specific task. Uses a POST form to upload fields to the database.
+"""
 @login_required
 def studentTaskSubmit(request, task_id):
     student = get_student_profile(request.user)
@@ -171,7 +180,7 @@ def studentTaskSubmit(request, task_id):
         # Keep the existing URL unless they upload a new file
         uploaded_file_url = submission.file_url if submission else ""
 
-        # Cloudinary Upload Logic matches your registration view!
+        # Cloudinary Upload Logic (similar to register logic)
         if media_file:
             try:
                 # resource_type="auto" is REQUIRED for Cloudinary to accept videos!
@@ -184,7 +193,7 @@ def studentTaskSubmit(request, task_id):
                 print(f"Task Submit: Cloudinary Success: {uploaded_file_url}")
             except Exception as e:
                 print(f"Task Submit: Cloudinary Error: {e}")
-                # Optional: you could use messages.error here to tell the user it failed
+                # Note from Mark: Could add a messages.error here to tell the user it failed
 
         if submission:
             # Update existing submission
@@ -204,6 +213,8 @@ def studentTaskSubmit(request, task_id):
         
         return redirect('student-tasks')
 
+    # Note from Mark: Context to be sent to page for Task data retrieval. If there's already a submission, retrieve 
+    # that data as well. It will be used in the above if condition for editing a submission or making a new one.
     context = {
         'task': task,
         'submission': submission
