@@ -1,9 +1,10 @@
-# students/urls.py
 from django.urls import path
 from . import views
 
 urlpatterns = [
-    # This creates the URL /students/dashboard/
-    path('dashboard/', views.student_dashboard_view, name='student_dashboard'),
-    path('feedback/', views.student_feedback_view, name='student_feedback'),
+    path('home/', views.studentHome, name='student_home'),
+    path('calender/', views.Calender, name='calender'),
+    path('mentor/', views.Mentor, name='mentor'),
+    path('progress/', views.Progress, name='progress'),
+    path('courses/', views.Courses, name='Courses'),
 ]

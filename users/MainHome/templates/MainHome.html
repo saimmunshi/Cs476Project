@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Home</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/MainHome.css' %}">
+</head>
+
+<body>
+ 
+    <!--Added By Saim: Nav login button and temporary button to access teacher and student view-->
+    <nav class="navbar navbar-expand-lg fixed-top px-3 px-md-5">
+        <div class="container-fluid justify-content-end">
+            <div class="d-flex align-items-center gap-2">
+                <a href="{% url 'teacher_home' %}" class="login-btn btn-outline d-none d-md-block">Teacher View</a>
+                <a href="{% url 'student_home' %}" class="login-btn btn-outline">Student View</a>
+                <span class="login-text d-none d-lg-inline ms-2">Already a member?</span>
+                <a href="{% url 'signin_page_view' %}" class="login-btn btn-primary ms-2">Login</a>
+            </div>
+        </div>
+    </nav>
+
+
+    <!--Added By Saim: student card -->
+    <div class="container main-content">
+        <div class="row g-4 justify-content-center">
+
+            <div class="col-12 col-md-6 col-lg-5">
+                <div class="glass-card shadow-sm h-100">
+                    <div class="card-icon student-bg"><i class="bi bi-mortarboard"></i></div>
+                    <h2 class="fw-bold mt-3">Student Portal</h2>
+                    <p class="text-muted">Map your progression, and track your milestones in real-time.</p>
+                    <div class="mt-auto">
+                        <a href="{% url 'student_register_view' %}" class="reg-btn w-100">Register as Student</a>
+                    </div>
+                </div>
+            </div>
+            <!--Added By Saim: teacher card -->
+            <div class="col-12 col-md-6 col-lg-5">
+                <div class="glass-card shadow-sm h-100">
+                    <div class="card-icon teacher-bg"><i class="bi bi-person-workspace"></i></div>
+                    <h2 class="fw-bold mt-3">Teacher Portal</h2>
+                    <p class="text-muted">Manage curriculum, monitor student growth, and build custom skill trees for
+                        your department.</p>
+                    <div class="mt-auto">
+                        <a href="{% url 'teacher_register_view' %}" class="reg-btn w-100">Register as Teacher</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+</body>
+
+</html>

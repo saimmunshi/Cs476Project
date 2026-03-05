@@ -1,0 +1,59 @@
+
+/*-------------------------------------------------------------------------
+ * Author:          Saim Munshi
+ * Type:            class
+ * Last Modified:   2026-02-21
+ * Modified By:     Saim Munshi
+ * Purpose:         body tag item to center and also sets min height and liner gradient for background
+ *-------------------------------------------------------------------------*/
+body {
+        background: linear-gradient(135deg, #f0f4f8 0%, #479df3, #deedff, #4395f3 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+
+    
+/*-------------------------------------------------------------------------
+ * Author:          Saim Munshi
+ * Type:            class
+ * Last Modified:   2026-02-21
+ * Modified By:     Saim Munshi
+ * Purpose:         Main registration form card that contains all the input fields
+ *-------------------------------------------------------------------------*/
+.registration-card {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    font-size: 0.95rem;
+}
+
+/*-------------------------------------------------------------------------
+ * Author:          Saim Munshi
+ * Type:            class
+ * Last Modified:   2026-02-21
+ * Modified By:     Saim Munshi
+ * Purpose:         Register button css style
+ *-------------------------------------------------------------------------*/
+.btn-register {
+    background-color: #0d6efd;
+    border: none;
+    padding: 12px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+
+/*-------------------------------------------------------------------------
+ * Author:          Saim Munshi
+ * Type:            class
+ * Last Modified:   2026-02-21
+ * Modified By:     Saim Munshi
+ * Purpose:          Register button css style when user hovers over the button this 
+ *-------------------------------------------------------------------------*/
+.btn-register:hover {
+    box-shadow: 0 0 0 4px rgba(68, 130, 238, 0.1);
+    border-color: #4482ee;
+}

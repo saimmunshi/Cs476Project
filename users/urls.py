@@ -1,19 +1,13 @@
-# users/urls.py
-from django.urls import path
-from django.contrib.auth import views as auth_views
-
-# Uses custom Login class
-from .views import CustomLoginView
+from django.urls import path, include
+from . import views           
+from students import views as student_views 
+from teachers import views as teacher_views 
 
 urlpatterns = [
-    path(
-        'login/',
-        CustomLoginView.as_view(),
-        name='login'
-    ),
-    path(
-        'logout/',
-        auth_views.LogoutView.as_view(),
-        name='logout'
-    ),
+    path('', views.main_page_view, name="home"),
+    path('teacher-Registration/', views.teacher_register_view, name='teacher_register_view'),
+    path('student-Registration/', views.student_register_view, name='student_register_view'),
+    path('login/', views.signin_page_view, name='signin_page_view'),
+    path('students/', include('students.urls')),
+    path('teachers/', include('teachers.urls')),
 ]

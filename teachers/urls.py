@@ -1,6 +1,7 @@
 from django.urls import path
-from .views import Progress
+from . import views  # This only imports from the teachers app
 
 urlpatterns = [
-    path("progress/", Progress, name="teacher-progress"),
+    # If you have teacherHome in teachers/views.py:
+    path('home/', views.teacherHome, name='teacher_home'),
 ]

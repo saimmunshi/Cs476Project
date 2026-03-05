@@ -1,0 +1,119 @@
+
+/*-------------------------------------------------------------------------
+ * Author:          Saim Munshi
+ * Type:            class
+ * Last Modified:   2026-02-21
+ * Modified By:     Saim Munshi
+ * Purpose:          body tag aligns the content center and sets background gradient 
+ *-------------------------------------------------------------------------*/
+body {
+    background: linear-gradient(135deg, #f0f4f8 0%, #479df3, #deedff, #4395f3  100%);
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+}
+
+/*-------------------------------------------------------------------------
+ * Author:          Saim Munshi
+ * Type:            class
+ * Last Modified:   2026-02-21
+ * Modified By:     Saim Munshi
+ * Purpose:         main login card css 
+ *-------------------------------------------------------------------------*/
+.login-card {
+    background: #ffffff;
+    padding: 2.0rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    max-width: 520px;
+    border: 1px solid #edf2f7;
+}
+
+/*-------------------------------------------------------------------------
+ * Author:          Saim Munshi
+ * Type:            class
+ * Last Modified:   2026-02-21
+ * Modified By:     Saim Munshi
+ * Purpose:         main login card css 
+ *-------------------------------------------------------------------------*/
+.form-control {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    font-size: 0.95rem;
+}
+
+/*-------------------------------------------------------------------------
+ * Author:          Saim Munshi
+ * Type:            class
+ * Last Modified:   2026-02-21
+ * Modified By:     Saim Munshi
+ * Purpose:         main login card css 
+ *-------------------------------------------------------------------------*/
+.form-control:focus {
+    box-shadow: 0 0 0 4px rgba(68, 130, 238, 0.1);
+    border-color: #4482ee;
+}
+
+/*-------------------------------------------------------------------------
+ * Author:          Saim Munshi
+ * Type:            class
+ * Last Modified:   2026-02-21
+ * Modified By:     Saim Munshi
+ * Purpose:         main login card css 
+ *-------------------------------------------------------------------------*/
+
+.btn-primary {
+    background-color: #4482ee;
+    border: none;
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.btn-primary:hover {
+    background-color: #366bc9;
+}
+
+.password-wrapper {
+    position: relative;
+}
+
+.password-wrapper i {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+    cursor: pointer;
+}
+
+/*-------------------------------------------------------------------------
+ * Author:          Saim Munshi
+ * Type:            class
+ * Last Modified:   2026-02-21
+ * Modified By:     Saim Munshi
+ * Purpose:         class and css style for forgot lmain login card css 
+ *-------------------------------------------------------------------------*/
+.forgot-link {
+    text-decoration: none;
+    color: #4482ee;
+    font-size: 0.85rem;
+}
+
+
+/*-------------------------------------------------------------------------
+ * Author:          Saim Munshi
+ * Type:            class
+ * Last Modified:   2026-02-21
+ * Modified By:     Saim Munshi
+ * Purpose:         class for create link css style 
+ *-------------------------------------------------------------------------*/
+.create-link {
+    color: #4482ee;
+    text-decoration: none
+}

@@ -16,24 +16,40 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from users.views import home_view, student_register_view, teacher_register_view
-
-from django.contrib.auth import views as auth_views
+from users.views import teacher_register_view # connects the views function that returns the register_view
+from users.views import student_register_view 
+ #connects the views function that returns the main_page_view
+from users.views import signin_page_view #connects the views function that returns the login_page_view
 
 urlpatterns = [
+    
+    
     path('admin/', admin.site.urls),
-    path('', home_view, name ="home"),
+    path('', include('users.urls')),
     
     # Added by Mark: Separated student and teacher registration pages
-    path('student-register/', student_register_view, name ="student-register"),
-    path("teacher-register/", teacher_register_view, name="teacher-register"),
+    #path('student-register/', student_register_view, name ="student-register"),
+    #path("teacher-register/", teacher_register_view, name="teacher-register"),
 
     path('students/', include('students.urls')),
+    path('teachers/', include('teachers.urls')),
+    path('users/', include('users.urls')),
     
     # Note by Mark: Add this once teachers/urls.py is made and ready
-    path('teachers/', include('teachers.urls')),
+    # path('teachers/', include('teachers.urls'))
     
     # Any URL starting with 'accounts/' will be handled by users.urls
     # Note from Mark: Not sure exactly how this pathing works, but URLS will have /accounts/ in it via Django authentication
-    path('accounts/', include('users.urls')),
+    
 ]
+
+"""
+    path('admin/', admin.site.urls),
+    path('', main_page_view, name="home"),
+    path('register/student/', student_register_view, name='student_register_view'),
+    path('register/teacher/', teacher_register_view, name='teacher_register_view'),
+    path('login/', signin_page_view, name='signin_page_view'),
+    path('student/home/', studentHome, name='student_home'),
+    path('teacher/home/', teacherHome, name='teacher_home'),
+    path('student/Courses/', Courses, name='Courses'),
+    """
