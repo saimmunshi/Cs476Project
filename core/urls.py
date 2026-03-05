@@ -31,7 +31,7 @@ urlpatterns = [
     path('students/', include('students.urls')),
     
     # Note by Mark: Add this once teachers/urls.py is made and ready
-    # path('teachers/', include('teachers.urls'))
+    path('teachers/', include('teachers.urls')),
     
     # Any URL starting with 'accounts/' will be handled by users.urls
     # Note from Mark: Not sure exactly how this pathing works, but URLS will have /accounts/ in it via Django authentication

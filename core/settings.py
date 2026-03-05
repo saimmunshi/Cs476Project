@@ -189,6 +189,7 @@ STATICFILES_DIRS =[
     os.path.join(BASE_DIR, 'teachers/features/My_Student/static'), 
     os.path.join(BASE_DIR, 'teachers/features/Meeting/static'),
     os.path.join(BASE_DIR, 'teachers/features/Setting/static'),
+    os.path.join(BASE_DIR, 'teachers/features/Progress/static'), # added by win516
 ]
 
 # Added by Mark: Testing login sessions and user permissions
