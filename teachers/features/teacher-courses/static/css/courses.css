@@ -1,0 +1,54 @@
+
+/*-------------------------------------------------------------------------
+ * Author:          Saim Munshi
+ * Type:            Layout Component
+ * Last Modified:   2026-02-27
+ * Purpose:         Main course creation card container css style
+ *-------------------------------------------------------------------------*/
+
+#course-creation-form{
+     background: white;
+}
+.course-creation-detail-card {
+    background: white;
+    border-radius: 20px;
+    border: 1px solid #e9ecef;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+
+
+/*-------------------------------------------------------------------------
+ * Author:          Saim Munshi
+ * Type:            Layout Component
+ * Last Modified:   2026-02-27
+ * Purpose:         label
+ *-------------------------------------------------------------------------*/
+label {
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+
+/*-------------------------------------------------------------------------
+ * Author:          Saim Munshi
+ * Type:            Layout Component
+ * Last Modified:   2026-02-27
+ * Purpose:         (submit button style
+ *-------------------------------------------------------------------------*/
+.submit-btn {
+    width: 100%;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 20px;
+}
+

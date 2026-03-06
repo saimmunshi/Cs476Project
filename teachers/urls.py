@@ -16,4 +16,5 @@ urlpatterns = [
     
     # Note: This is required for specific feedback pages
     path('submissions/<str:submission_id>/feedback/', views.teacherFeedback, name='teacher-feedback'),
+    path('my-students/', views.My_Student, name='My_Student'), #Added by Saim Connection to my student page
 ]
