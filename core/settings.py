@@ -70,13 +70,16 @@ TEMPLATES = [
             os.path.join(BASE_DIR, 'users/StudentRegistration/templates'),
             os.path.join(BASE_DIR, 'users/SignInPage/templates'),
 
+            
+            # Teacher App templates
+            os.path.join(BASE_DIR, 'teachers/BaseTeacher/templates'),
+            os.path.join(BASE_DIR, 'teachers/features'),
+            os.path.join(BASE_DIR, 'teachers/features/Progress/templates'),  # added by win516
+
             # Student App templates (This is likely where BaseStudent.html lives)
             os.path.join(BASE_DIR, 'students/BaseStudent/templates'), 
             os.path.join(BASE_DIR, 'students/features'),
 
-            # Teacher App templates
-            os.path.join(BASE_DIR, 'teachers/BaseTeacher/templates'),
-            os.path.join(BASE_DIR, 'teachers/features'),
 
 
 
@@ -243,6 +246,7 @@ STATICFILES_DIRS =[
     os.path.join(BASE_DIR, 'teachers/features/Meeting/static'),
     os.path.join(BASE_DIR, 'teachers/features/Setting/static'),
     os.path.join(BASE_DIR, 'teachers/BaseTeacher/static'),
+    os.path.join(BASE_DIR, 'teachers/features/Progress/static'), #added by win516
 
 ]
 

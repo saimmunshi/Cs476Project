@@ -50,3 +50,17 @@ Purpose: Connects to the Meeting/Video call feature
 def Meeting(request):  
     # Looks in teachers/features/Meeting/templates/Meeting/Meeting.html
     return render(request, 'Meeting/Meeting.html')
+
+# added by win516
+def Progress(request):
+    students = [
+        {"name": "Aisha Khan", "progress": 78, "completed": 7, "pending": 2, "overdue": 1, "last_activity": "Mar 3"},
+        {"name": "John Lee", "progress": 52, "completed": 5, "pending": 4, "overdue": 0, "last_activity": "Mar 1"},
+        {"name": "Maria Gomez", "progress": 91, "completed": 10, "pending": 1, "overdue": 0, "last_activity": "Today"},
+    ]
+    stats = {"active_students": len(students), "overdue": 1, "avg_completion": 74}
+
+    return render(request, "Progress/templates/Progress.html", {
+        "students": students,
+        "stats": stats,
+    })
