@@ -1,49 +1,50 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from .models import TaskSubmission
 
-# Create your views here.
-# Note from Mark: This page will have to be very much changed to be in line with students/views.py
+# Added by Matthew/Spooky: Renders the teacher home page.
+def teacherHome(request):
 
-"""
-Name Function: Home
-type: Function 
-Purpose: Connects to the Teacher Home dashboard
-"""
-def Home(request):  
-    # Looks in teachers/features/Home/templates/Home/Home.html
-    return render(request, 'Home/Home.html')
+    # Added by Matthew/Spooky: This renders the home.html template for the teacher.
+    return render(request, 'users/main/templates/home.html')
 
-"""
-Name Function: Calendar
-type: Function 
-Purpose: Connects to the Teacher Calendar feature
-"""
-def Calendar(request):  
-    # Looks in teachers/features/Calendar/templates/Calendar/Calendar.html
-    return render(request, 'Calendar/Calendar.html')
+# Added by Matthew/Spooky: Renders a list of courses for the teacher.
+def teacherCourseList(request):
 
-"""
-Name Function: My_Student
-type: Function 
-Purpose: Connects to the My Student management feature
-"""
-def My_Student(request):  
-    # Looks in teachers/features/My_Student/templates/My_Student/My_Student.html
-    return render(request, 'My_Student/My_Student.html')
+    # Added by Matthew/Spooky: Example list of courses for demonstration purposes.
+    courses = ['Math 101', 'CS 476', 'Physics 202']
 
-"""
-Name Function: Create_Task
-type: Function 
-Purpose: Connects to the Task creation feature
-"""
-def Create_Task(request):  
-    # Looks in teachers/features/Create_Task/templates/Create_Task/Create_Task.html
-    return render(request, 'Create_Task/Create_Task.html')
+    # Added by Matthew/Spooky: Renders the course_list.html template passing the list of courses.
+    return render(request, 'teachers/course_list.html', {'courses': courses})
 
-"""
-Name Function: Meeting
-type: Function 
-Purpose: Connects to the Meeting/Video call feature
-"""
-def Meeting(request):  
-    # Looks in teachers/features/Meeting/templates/Meeting/Meeting.html
-    return render(request, 'Meeting/Meeting.html')
+# Added by Matthew/Spooky: Renders all task submissions for the teacher to review and provide feedback.
+def teacherTaskSubmissions(request):
+
+    # Added by Matthew/Spooky: Retrieves all task submissions from the database.
+    submissions = TaskSubmission.objects.all()
+
+    # Added by Matthew/Spooky: Renders the task_submissions.html template with all submissions.
+    return render(request, 'teachers/task_submissions.html', {'submissions': submissions})
+
+# Added by Matthew/Spooky: Handles adding teacher feedback to a specific task submission.
+def teacherAddFeedback(request, submission_id):
+
+    # Added by Matthew/Spooky: Retrieves the specific submission object from the database by its ID.
+    submission = TaskSubmission.objects.get(id=submission_id)
+
+    # Added by Matthew/Spooky: Checks if the form is submitted via POST method.
+    if request.method == 'POST':
+
+        # Added by Matthew/Spooky: Retrieves the feedback text submitted by the teacher.
+        feedback_text = request.POST.get('feedback', '')
+
+        # Added by Matthew/Spooky: Stores the teacher feedback in the JSONField under the key 'teacher'.
+        submission.feedback['teacher'] = feedback_text
+
+        # Added by Matthew/Spooky: Saves the updated submission object back to the database.
+        submission.save()
+
+        # Added by Matthew/Spooky: Redirects the teacher back to the task submissions page after saving feedback.
+        return redirect('teacher_task_submissions')
+
+    # Added by Matthew/Spooky: Renders the add_feedback.html template passing the submission object.
+    return render(request, 'teachers/add_feedback.html', {'submission': submission})

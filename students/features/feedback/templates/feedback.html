@@ -1,87 +1,114 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block page-title %}My Feedback{% endblock %}
-
-{% block head %}
-    <link rel="stylesheet" href="{% static 'css/feedback.css' %}">
-{% endblock %}
+{% block page-title %}Feedback{% endblock %}
 
 {% block content %}
 
-<!-- 
-Added by Mark: I lowkey fully gen'd this page. It's just a prototype and doesn't exactly fit 
-our object models. The .js also is strange and I have not looked at it.
--->
+<h2>Feedback Inbox</h2>
 
-<div class="feedback-container">
-    <h1>Latest Feedback</h1>
-    
-    <div class="feedback-list">
-        
-        <!-- 
-           DJANGO LOOP START 
-        -->
-        
-        <!-- Example Item 1 -->
-        <div class="feedback-item" 
-            onclick="openFeedback(this)"
-            data-task="C Major Chords"
-            data-course="Intro Piano"
-            data-grade="100"
-            data-comment="Good speed on your transitions.">
-            
-            <div class="fb-info">
-                <h3>C Major Chords</h3>
-                <p>Intro Piano - Jan 12, 2026</p>
-            </div>
-            <div class="grade-badge">Good</div>
-        </div>
+<h3>Received Feedback</h3>
 
-        <!-- Example Item 2 -->
-        <div class="feedback-item" 
-            onclick="openFeedback(this)"
-            data-task="Python Functions Quiz"
-            data-course="CS 101"
-            data-grade="65"
-            data-comment="You struggled with the recursion question. Please review Chapter 4 and come see me during office hours.">
-            
-            <div class="fb-info">
-                <h3>Python Functions Quiz</h3>
-                <p>CS 101 - Feb 4, 2026</p>
-            </div>
-            <div class="grade-badge low">Poor</div>
-        </div>
+{% for fb in received_feedback %}
 
-        <!-- DJANGO LOOP END -->
+<div class="feedback-card">
 
-    </div>
+    <p><strong>From:</strong> {{ fb.sender.username }}</p>
+
+    <p>{{ fb.message }}</p>
+
+    {% if fb.attachment_url %}
+        <a href="{{ fb.attachment_url }}" target="_blank">
+            View Attachment
+        </a>
+    {% endif %}
+
+    <p>
+        Status:
+        {% if fb.is_read %}
+            <span style="color:green;">Read</span>
+        {% else %}
+            <span style="color:red;">Unread</span>
+        {% endif %}
+    </p>
+
+    <a href="{% url 'mark_feedback_read' fb.id %}">
+        Mark as Read
+    </a>
+
 </div>
 
-<!-- THE MODAL (Hidden Markup) -->
-<div id="feedbackModal" class="modal-overlay" onclick="closeFeedback(event)">
-    <div class="modal-card">
-        <span class="close-btn" onclick="closeFeedbackActual()">&times;</span>
-        
-        <div class="modal-header">
-            <h2 id="modalTitle">Task Title</h2>
-            <p id="modalCourse" style="color: #666;">Course Name</p>
-        </div>
-        
-        <div class="modal-body">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <h4>Mentor's Feedback:</h4>
-                <div id="modalGrade" class="grade-badge">Poor</div>
-            </div>
-            
-            <div id="modalComment" class="teacher-comment-box">
-            </div>
-        </div>
-    </div>
+{% empty %}
+
+<p>No feedback received.</p>
+
+{% endfor %}
+
+<hr>
+
+<h3>Sent Feedback</h3>
+
+{% for fb in sent_feedback %}
+
+<div class="feedback-card">
+
+    <p><strong>To:</strong> {{ fb.receiver.username }}</p>
+
+    <p>{{ fb.message }}</p>
+
+    <p>
+        Read Status:
+        {% if fb.is_read %}
+            <span style="color:green;">Student Read</span>
+        {% else %}
+            <span style="color:orange;">Not Read Yet</span>
+        {% endif %}
+    </p>
+
 </div>
 
-{% block scripts %}
-    <script src="{% static 'js/feedback.js' %}"></script>
-{% endblock %}
+{% empty %}
+
+<p>No feedback sent.</p>
+
+{% endfor %}
+
+<hr>
+
+<h3>Send Feedback</h3>
+
+<form method="POST" action="{% url 'send_feedback' %}" enctype="multipart/form-data">
+
+    {% csrf_token %}
+
+    <label>Select User</label>
+
+    <select name="receiver">
+
+        {% for user in request.user.__class__.objects.all %}
+
+        {% if user != request.user %}
+        <option value="{{ user.id }}">
+            {{ user.username }}
+        </option>
+        {% endif %}
+
+        {% endfor %}
+
+    </select>
+
+    <br><br>
+
+    <textarea name="message" placeholder="Write feedback..." required></textarea>
+
+    <br><br>
+
+    <input type="file" name="attachment">
+
+    <br><br>
+
+    <button type="submit">Send Feedback</button>
+
+</form>
 
 {% endblock %}

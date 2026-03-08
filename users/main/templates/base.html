@@ -30,19 +30,27 @@ See something like student-dashboard.html for an example of it's usage.
   <div class="layout">
     <aside class="sidebar">
       <div class="sidebar__section">
+    
         {% if user.is_student %}
           <p><a class="sidebar__link" href="{% url 'student_dashboard' %}">Dashboard</a></p>
           <p><a class="sidebar__link" href="{% url 'student_feedback' %}">Feedback</a></p>
         {% endif %}
-          <a class="sidebar__link sidebar-link-bottom" href="{% url 'home' %}">Home (Main Page)</a>
+    
+        {% if user.is_teacher %}
+          <p><a class="sidebar__link" href="{% url 'teacher_feedback' %}">Student Feedback</a></p>
+        {% endif %}
+    
+        <a class="sidebar__link sidebar-link-bottom" href="{% url 'home' %}">Home (Main Page)</a>
+    
         {% if user.is_authenticated %}
           <a href="#" class="sidebar__link" id="logout-link">Logout</a>
           <form id="logout-form" method="post" action="{% url 'logout' %}" style="display:none;">
             {% csrf_token %}
           </form>
         {% endif %}
+    
       </div>
-
+    
       {% block sidebar_extra %}{% endblock %}
     </aside>
 
