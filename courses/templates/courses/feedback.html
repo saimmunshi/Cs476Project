@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Teacher Feedback</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="{% static 'js/feedback.js' %}"></script>
+</head>
+<body>
+    <div class="feedback-container">
+        <h1>Provide Feedback</h1>
+        <form id="feedbackForm" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="submission_id" id="submission_id" value="">
+
+            <label for="feedbackText">Comments:</label>
+            <textarea name="feedbackText" id="feedbackText" rows="5" required></textarea>
+
+            <label for="attachments">Attachments:</label>
+            <input type="file" name="attachments" id="attachments" multiple>
+
+            <button type="submit">Submit Feedback</button>
+        </form>
+
+        <div id="feedbackMessage" style="margin-top: 20px;"></div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $("#feedbackForm").on("submit", function (e) {
+                e.preventDefault();
+
+                let formData = new FormData(this);
+
+                $.ajax({
+                    url: "{% url 'send_feedback' %}",
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        if (response.success) {
+                            $("#feedbackMessage").html("<span style='color:green'>Feedback submitted successfully!</span>");
+                            $("#feedbackForm")[0].reset();
+                        } else {
+                            $("#feedbackMessage").html("<span style='color:red'>Failed to submit feedback. Try again.</span>");
+                        }
+                    },
+                    error: function () {
+                        $("#feedbackMessage").html("<span style='color:red'>An error occurred while submitting feedback.</span>");
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+
+
+/* Task System Components */
+.task-system-container {
+    display: flex;
+    gap: 24px;
+    height: calc(100vh - 180px); /* Adjust based on your header height */
+}
+
+.task-inventory-scroll {
+    overflow-y: auto;
+    padding-right: 10px;
+    flex-grow: 1;
+}
+
+.mission-detail-card {
+    background: white;
+    border-radius: 20px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.tab-scroll-area {
+    overflow-y: auto;
+    padding: 30px;
+    flex-grow: 1;
+}
+
+/* Mission Card Styling */
+.mission-card {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.mission-card.active {
+    border-color: #0d6efd;
+    background-color: #f0f7ff;
+    opacity: 1 !important;
+}
+
+
+@media (max-width: 991.98px) {
+    .sidebar-container {
+        display: none;
+    }
+    .main-content {
+        margin-left: 0;
+        padding: 100px 20px 40px 20px; /* Space for fixed mobile nav */
+    }
+    .navbar {
+        height: 70px;
+    }
+    .floating-chat { display: none !important; }
+}
+
+@media (min-width: 1200px) {
+    .main-content {
+        padding: 50px 80px;
+    }
+}

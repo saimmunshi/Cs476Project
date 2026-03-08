@@ -19,12 +19,10 @@ from django.urls import path, include
 from users.views import teacher_register_view # connects the views function that returns the register_view
 from users.views import student_register_view 
  #connects the views function that returns the main_page_view
-from users.views import home_view, CustomLoginView, Feedback #connects the views function that returns the login_page_view
+from users.views import signin_page_view #connects the views function that returns the login_page_view
 
 urlpatterns = [
     
-    path('', home_view, name='home'),  # ← root URL
-    path('signin/', CustomLoginView.as_view(), name='signin'),  # Use as_view() for class-based views
     
     path('admin/', admin.site.urls),
     path('', include('users.urls')),
@@ -56,4 +54,3 @@ urlpatterns = [
     path('teacher/home/', teacherHome, name='teacher_home'),
     path('student/Courses/', Courses, name='Courses'),
     """
-

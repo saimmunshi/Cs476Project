@@ -1,18 +1,21 @@
 from django.urls import path
-from . import views
+from . import views  # This only imports from the teachers app
 
-# Added by Matthew/Spooky: URL patterns for teacher-specific pages and actions.
 urlpatterns = [
-
-    # Added by Matthew/Spooky: Home page for teachers.
+    # If you have teacherHome in teachers/views.py:
     path('home/', views.teacherHome, name='teacher_home'),
-
-    # Added by Matthew/Spooky: Page listing all courses taught by the teacher.
+    path('calendar/', views.Calendar, name='calendar'),
     path('courses/', views.teacherCourseList, name='teacher-course-list'),
-
-    # Added by Matthew/Spooky: Page showing all task submissions for feedback.
-    path('submissions/', views.teacherTaskSubmissions, name='teacher_task_submissions'),
-
-    # Added by Matthew/Spooky: Page to add feedback for a specific task submission.
-    path('submissions/<str:submission_id>/feedback/', views.teacherAddFeedback, name='teacher_add_feedback'),
+    path('create-task/', views.Create_Task, name='create-task'),
+    path('courses/create-course', views.teacherCreateCourse, name='create-course'),
+    
+    # Note: This is required for specific course pages
+    path('courses/<str:course_id>/', views.teacherCourseMain, name='teacher-course-main'),
+    
+    # Note: This is required for specific task pages
+    path('tasks/<str:task_id>/submissions/', views.teacherTaskSubmissions, name='teacher-task-submissions'),
+    
+    # Note: This is required for specific feedback pages
+    path('submissions/<str:submission_id>/feedback/', views.teacherFeedback, name='teacher-feedback'),
+    path('calendar/', views.Calendar, name='calendar'),
 ]

@@ -1,24 +1,25 @@
-# users/models.py
+# courses/models.py
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.conf import settings
 from django_mongodb_backend.fields import ObjectIdAutoField
 
-# Authentication User
+"""# Added by Mark: This creates the blueprint for the entire Course and Task system backend.
+"""
 class CustomUser(AbstractUser):
-    id = ObjectIdAutoField(primary_key=True)
+    id = ObjectIdAutoField(primary_key=True) #mongo db compatiablity 
+    # email must be unique for email also their username to work
+    email = models.EmailField(unique=True) 
 
-    def __str__(self):
-        return self.username
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username'] # username is still required by Django but not for login
 
     @property
     def is_student(self):
-        # Returns true if the user has a student profile.
         return hasattr(self, 'students_student_profile')
 
     @property
     def is_teacher(self):
-        # Returns true if the user has a teacher profile.
         return hasattr(self, 'teachers_teacher_profile')
 
 # Abstract Base Class (Parent class for Student and Teacher model)

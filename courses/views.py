@@ -6,6 +6,11 @@ from users.models import CustomUser
 import cloudinary.uploader
 
 
+
+
+
+
+
 # Added by Matthew/Spooky: This view displays the feedback page where users can see feedback they have sent and received.
 @login_required
 def feedback_page(request):
@@ -20,7 +25,7 @@ def feedback_page(request):
     sent = Feedback.objects.filter(sender=user).order_by('-created_at')
 
     # Added by Matthew/Spooky: This renders the feedback.html template and passes both received and sent feedback messages to the template.
-    return render(request, "feedback.html", {
+    return render(request, "courses/feedback.html", {
 
         # Added by Matthew/Spooky: Variable used in the template to display feedback received by the user.
         "received_feedback": received,

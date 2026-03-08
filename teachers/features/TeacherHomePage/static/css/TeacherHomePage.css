@@ -1,0 +1,39 @@
+
+
+
+.feedback-window {
+    overflow: hidden;
+    width: 100%;
+}
+
+.feedback-wrapper {
+    display: flex;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.feedback-slide {
+    min-width: 100%;
+    flex-shrink: 0;
+}
+
+
+/* Responsive Breakpoints */
+@media (max-width: 991.98px) {
+    .sidebar-container {
+        display: none;
+    }
+    .main-content {
+        margin-left: 0;
+        padding: 100px 20px 40px 20px; /* Space for fixed mobile nav */
+    }
+    .navbar {
+        height: 70px;
+    }
+    .floating-chat { display: none !important; }
+}
+
+@media (min-width: 1200px) {
+    .main-content {
+        padding: 50px 80px;
+    }
+}
