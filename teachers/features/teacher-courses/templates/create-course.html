@@ -31,7 +31,8 @@
         <form method="POST">
           <!--  ----------------------------------------------------------------->
           {% csrf_token %}
-
+          <!--Added by Saim Munshi This is to store task data-->
+          <input type="hidden" name="tasks_data" id="tasks_data" value="[]">
           <!--  Added By Mark:-->
           <div class="form-group mb-4">
             <label for="course-name-input">Course Name</label>

@@ -151,8 +151,11 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <small class="text-secondary">Sent by System</small>
                         <div class="form-check">
-                            <button class="btn btn-primary btn-sm remove-btn"
-                                data-id="{{ notification.id }}">Remove</button>
+                            {% csrf_token %}
+                            <form method="POST" action="{% url 'delete-notification' notification.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary btn-sm">Remove</button>
+                            </form>
                         </div>
                     </div>
                 </div>

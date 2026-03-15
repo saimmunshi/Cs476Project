@@ -172,9 +172,9 @@ def Create_Task(request):
         )
         # Added By Saim Munshi: Create Tasks Notification:
         Notification.objects.create(
-            user=request.user,
-            nnotification_type=f"Create Task For {course.title}",
-            message=f"Task '{title}' has been successfully created!"
+            notification_type=f"Create Task For {course.title}",
+            message=f"Task '{title}' has been successfully created!",
+            user=request.user
         )
         if student_ids:
             new_task.assigned_students.set(student_ids)
@@ -318,3 +318,17 @@ def deleteCourse(request, course_id):
 
 
 
+# Added By Saim Munshi: Delete notification logic
+
+@login_required
+def deleteNotification(request, notification_id):
+    # Make sure the notification belongs to the logged-in user
+    notification = get_object_or_404(Notification, id=notification_id, user=request.user)
+    
+    if request.method == "POST":
+        notification.delete()
+        # Redirect to the same page or teacher home
+        return redirect(request.META.get('HTTP_REFERER', '/'))  # goes back to previous page
+
+    # Fallback redirect
+    return redirect('teacher_home')  # replace with your actual teacher home URL name

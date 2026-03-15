@@ -22,7 +22,7 @@ urlpatterns = [
     path('delete-course/<str:course_id>/', views.deleteCourse, name='delete-course'),  # Added By Saim Connect to delete course
 
     # Added By Saim: Notfication and message logic.
-    
+    path('notification/delete/<str:notification_id>/',views.deleteNotification,name='delete-notification'),
     path('calendar/', views.Calendar, name='calendar'),
     
 ]

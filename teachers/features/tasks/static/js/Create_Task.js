@@ -84,12 +84,14 @@ courseTitle.addEventListener('change', function () {
 const poolWeights = {
     "Assignment": 25,
     "Quiz": 25,
-    "Project": 50
+    "Project": 50,
+    "Meeting": 0
 };
 
 /*Added by Saim Munshi: Helper function calculate and assign weight to tasks  */
 function courseWeightCal() {
 
+    
     const nodes = document.querySelectorAll(".roadmap-node[data-type]"); // List of nodes created in roadmap nodes for task
 
     //Added By Saim: Counter variable for each task type
@@ -253,8 +255,6 @@ addButton.addEventListener('click', e => {
 
     /*  Added By Saim Munshi: Bases on the type this determines the icon type based on type when type is selected appropriate bootstrap class  is added*/
     /* This is Bootstrap Icon Logic */
-    let iconClass = "bi-lock-fill";
-    let nodeColor = "bg-primary";
     if ((taskType === "Quiz")) {
         iconClass = "bi-question-circle-fill";
         nodeColor = "bg-warning";
@@ -265,6 +265,11 @@ addButton.addEventListener('click', e => {
     }
     if (taskType === "Assignment") {
         iconClass = "bi-journal-text";
+        nodeColor = "bg-info";
+    }
+
+    if (taskType === "Meeting") {
+        iconClass = "bi bi-calendar-event";
         nodeColor = "bg-info";
     }
     /*-----------------------------------------------------------------------------------------------------------*/
@@ -298,14 +303,13 @@ addButton.addEventListener('click', e => {
         '<div class="skill-node ' + nodeColor + '">' +
         '<i class="bi ' + iconClass + ' text-white"></i>' +
         '</div>' +
-
         '<div class="weight-popup">' +
         '<div><strong>' + taskValue + '</strong></div>' +
         '<div>Type: ' + taskType + '</div>' +
         '<div>Start Date: ' + (startDate ? startDate : "No date") + '</div>' +
         '<div>Due: ' + (dueDate ? dueDate : "No date") + '</div>' +
-        '<div class="popup-status">Status: ' + checkboxElement.getAttribute("data-status") + '</div>'
-    '<div class="popup-weight">Weight: --%</div>' +
+        '<div class="popup-weight">Weight: --%</div>' +
+        '<div class="popup-status">Status: ' + checkboxElement.getAttribute("data-status") + '</div>' +
         '</div>';
 
     /*---------------------------------------------------------------------------------------------------------*/
@@ -313,22 +317,23 @@ addButton.addEventListener('click', e => {
     connector.className = "connector";
     descriptionNodeDisplay.appendChild(connector);
     descriptionNodeDisplay.appendChild(newNodeDiv);
+    courseWeightCal();
     counter++;
     const taskData = {
+        id: taskIdCheckBox, 
         name: taskValue,
         type: taskType,
         status: checkboxElement.getAttribute("data-status"),
         startDate: startDate,
         due_date: dueDate,
-
     };
 
     taskArray.push(taskData);
-    document.getElementById('tasks_data').value = JSON.stringify(taskArray);
-    courseWeightCal();
+    hiddenInput.value = JSON.stringify(taskArray);
+    
     courseTask.value = "";
+   
 
-    //counter for both node and checkbox
 
 
 });
@@ -381,56 +386,57 @@ function reMapRoadNode() {
             '<div>Type: ' + task.type + '</div>' +
             '<div>Start Date: ' + (task.startDate || "No date") + '</div>' +
             '<div>Due: ' + (task.due_date || "No date") + '</div>' +
-            '<div class="popup-status">Status: ' + task.status + '</div>' +
             '<div class="popup-weight">Weight: --%</div>' +
+            '<div class="popup-status">Status: ' + task.status + '</div>' +
             '</div>';
-
+        
+       
         const connector = document.createElement("div");
         connector.className = "connector";
 
         descriptionNodeDisplay.appendChild(connector);
         descriptionNodeDisplay.appendChild(newNodeDiv);
+        courseWeightCal();
     });
 }
+
 
 /*  Added By Saim Munshi: Remove tasks button logic */
 deleteButton.addEventListener('click', function (e) {
     e.preventDefault();
 
-    // Added By Saim MUnshi: Find the checked task
+    // Added By Saim Munshi: find the checked task
     const selectedCheckbox = document.querySelector(".form-check-input:checked");
 
-    // Added By Saim MUnshi: checks to see if checkbox is selected
+    // 2. Check if a checkbox is actually selected
     if (!selectedCheckbox) {
         alert("Please select a task to remove.");
         return;
     }
 
-    const parentDiv = selectedCheckbox.parentElement;
+    // Added By Saim Munshi: gets the id
+    const targetId = selectedCheckbox.id;
 
-    // Added By Saim MUnshi: Remove the checkbox item
-    let childrenTasks = selectedCheckbox.parentNode.children;
 
-    //Added by Saim Munshi: list to hold all the children task
-    let taskList = [];
-
-    //Added by Saim Munshi: list to hold all the children task
-    for (let i = 0; i < childrenTasks.length; i++) {
-        if (childrenTasks[i].classList.contains("form-check")) {
-            taskList.push(childrenTasks[i]);
+    // Added By Saim Munshi: added to loop throught taskarray and match the id  target id from the selected task checkbox
+    for (let i = 0; i < taskArray.length; i++) {
+        if (taskArray[i].id === targetId) {
+            taskArray.splice(i, 1); // Remove from data
+            break; // Stop the loop
         }
     }
 
-    //Added by Saim Munshi: list to hold all the children task
-    let taskIndex = taskList.indexOf(parentDiv);
-
-    if (taskIndex !== -1) {
-        taskArray.splice(taskIndex, 1);
+    // Added By Saim Munshi: remove the visual row from the sidebar
+    const taskRow = selectedCheckbox.closest(".form-check");
+    if (taskRow) {
+        taskRow.remove();
     }
+    
 
-    parentDiv.remove();
+    // Added By Saim Munshi: update the hidden data input for the database
+    const hiddenInput = document.getElementById('tasks_data');
+    hiddenInput.value = JSON.stringify(taskArray);
 
-    document.getElementById('tasks_data').value = JSON.stringify(taskArray);
     reMapRoadNode();
 });
 
@@ -441,9 +447,9 @@ const courseMap = JSON.parse(courseDataElement.textContent);
 const courseSelect = document.getElementById('courseSelect');
 const studentSelect = document.getElementById('studentSelect');
 
-courseSelect.addEventListener('change', function() {
+courseSelect.addEventListener('change', function () {
     const selectedCourseId = this.value;
-    
+
     studentSelect.innerHTML = '';
 
     if (selectedCourseId && courseMap[selectedCourseId]) {
@@ -451,7 +457,7 @@ courseSelect.addEventListener('change', function() {
             const option = document.createElement('option');
             option.value = student.id;
             option.textContent = student.name;
-            option.selected = true; 
+            option.selected = true;
             studentSelect.appendChild(option);
         });
     }

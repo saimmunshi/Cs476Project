@@ -35,14 +35,16 @@ class Teacher(MentoraBaseUser):
 
 #Added By Saim Munshi: Notfication mongodb object
 class Notification(models.Model):
+    id = ObjectIdAutoField(primary_key=True) 
+
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     notification_type = models.CharField(max_length=50)
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
+
     class Meta:
-        db_table = "teacher_notifications" 
-    
+        db_table = "teacher_notifications"
 
     def __str__(self):
         return self.message
