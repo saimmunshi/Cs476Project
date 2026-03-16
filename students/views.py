@@ -4,7 +4,7 @@ from django.http import HttpResponseForbidden, HttpResponseBadRequest
 from courses.models import Course, Task, TaskSubmission
 from functools import wraps
 import cloudinary.uploader  # For task submission
-
+from students.models import Student
 # Create your views here.
 
 """
@@ -24,10 +24,10 @@ def Calendar(request):
     return render(request, 'Calendar/templates/Calendar.html')
 
 def Mentor(request):  
-    return render(request, '/Mentors/templates/Mentor.html')
+    return render(request, 'Mentors/templates/Mentor.html')
 
 def Progress(request):  
-    return render(request, '/Progess/templates/Progess.html')
+    return render(request, 'Progress/templates/Progress.html')
 
 """ ------------------------------ Student Courses Views/Functions ------------------------------ """
 # Note: Below are all the Course related functionality on the student's side.
@@ -37,7 +37,7 @@ def Progress(request):
 def student_required(view_func):
     @wraps(view_func)
     def wrapper(request, *args, **kwargs):
-        if not request.user.is_student:
+        if not Student.objects.filter(user=request.user).exists():
             return HttpResponseForbidden("You must be logged in as a student.")
         request.student_profile = request.user.students_student_profile
         return view_func(request, *args, **kwargs)
@@ -65,7 +65,7 @@ Added by Mark: A function to link the current student to the course they clicked
 @login_required
 @student_required
 def joinCourse(request, course_id):
-    student = request.student_profile
+    student = request.user.student
 
     if request.method == "POST":
         course = get_object_or_404(Course, id=course_id)
@@ -85,7 +85,7 @@ Notes: Shows all currently enrolled courses for the logged in student. Can lead 
 @login_required
 @student_required
 def myCourses(request):
-    student = request.student_profile
+    student = request.user.student
 
     # Only get courses where Tthe current student is in the 'students' ManyToMany list
     courses = student.enrolled_courses.all() # Note: enrolled_courses is a related_name in the Courses model, see courses/models.py
@@ -217,3 +217,4 @@ def studentTaskSubmit(request, task_id):
         'submission': submission
     }
     return render(request, 'tasks/templates/student-task-submit.html', context)
+

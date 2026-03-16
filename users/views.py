@@ -6,24 +6,20 @@ from django.urls import reverse_lazy
 from students.models import Student
 from teachers.models import Teacher
 from .models import CustomUser
-from django.contrib.auth import get_user_model, login
+from django.contrib.auth import get_user_model, login, authenticate
 from django.contrib.auth.views import LoginView
-from django.contrib.auth import authenticate, login
-#from django.contrib.auth import get_user_model
-#from django.contrib.auth import authenticate, login
-#from teachers.models import Teacher
-#from django.contrib.auth.models import update_last_login
-#from django.contrib.auth.signals import user_logged_in
 import re
-
+# from django.contrib.auth import get_user_model
+# from django.contrib.auth import authenticate, login
+# from teachers.models import Teacher
+# from django.contrib.auth.models import update_last_login
+# from django.contrib.auth.signals import user_logged_in
 
 # Create your views here.
 
 def home_view(request):
+    # Added by Matthew/Spooky: Render the generic home page.
     return render(request, "home.html")
-
-def teacher_register_view(request):
-    return render(request, "teacher-registration.html")
 
 
 """
@@ -32,15 +28,12 @@ Function Name: student_register_view
 Purpose: direct view.py django to the correct html file
 Update: Fixed Cloudinary-MongoDB picture upload - Mark
 """
-# Get the active User model (CustomUser)
+# Added by Matthew/Spooky: Get the active User model (CustomUser).
 User = get_user_model()
 
 def main_page_view(request):
+    # Added by Matthew/Spooky: Render the main landing page for authenticated users.
     return render(request, 'MainHome.html')
-
-
-
-
 
 
 """
@@ -49,19 +42,18 @@ Function Name: student_register_view
 Purpose: direct view.py django to the correct html file
 Update: Fixed Cloudinary-MongoDB picture upload - Mark
 """
-# Get the active User model (CustomUser)
-User = get_user_model() # make sure it uses the custom user configuration 
-
 def student_register_view(request):
+    # Added by Matthew/Spooky: Handle student registration form submission.
     if request.method == 'POST':
-        # Print all data received - Used to debug and test if POST data is being sent.
+        # Added by Matthew/Spooky:Print all data received. Used to debug and test if POST data is being sent.
         print(f"Data: {request.POST}")
         
-        # Check for file
+        # Added by Matthew/Spooky: Initialize image URL for Cloudinary upload.
         image_url = None
         image_file = request.FILES.get('UploadPFP')
         if image_file:
             try:
+                # Added by Matthew/Spooky: Upload the profile picture to Cloudinary.
                 upload_result = cloudinary.uploader.upload(
                     image_file, 
                     folder="Mentora_Profiles"
@@ -69,18 +61,18 @@ def student_register_view(request):
                 image_url = upload_result.get('secure_url')
                 print(f"Student Register: Cloudinary Success: {image_url} ---")
             except Exception as e:
+                # Added by Matthew/Spooky: Handle upload errors.
                 print(f"Student Register: Cloudinary Error: {e} ---")
         else:
             print("Student Register: No image file provided")
 
-        # Set user data with POST data
+        # Added by Matthew/Spooky:Set user data with POST data.
         email = request.POST.get('email')
         password = request.POST.get('mainpassword')
         confirmpassword = request.POST.get('confirmpassword')
         name = request.POST.get("name", "").strip()
 
-
-        #Regex to ensure the name and las
+        # Added by Matthew/Spooky: Regex to ensure full name format.
         name_regex = r"^[A-Za-z]+(?: [A-Za-z'-]+)+$"
         if not name: 
             messages.error(request, "Full name is required.")
@@ -94,26 +86,19 @@ def student_register_view(request):
             print("Student Register: User already exists ---")
             return render(request, 'StudentRegistration.html', {'error': 'Email already exists'})
         
-        # Password authentication
+        # Added by Matthew/Spooky: Password authentication.
         if password != confirmpassword:
             messages.error(request, "Password do not match.")
             return render(request, "StudentRegistration.html")
         
-
-        #Email authentication
-        if User.objects.filter(email=email).exists(): 
-            messages.error(request, "Email already exists.") 
-            return render(request, "StudentRegistration.html")
-        
         try:
-            # Create User
             user = User.objects.create_user(
-                username=request.POST.get('name'),  # Changed from email to name
+                username=email,
                 email=email, 
                 password=password
             )
 
-   
+            # Added by Matthew/Spooky: Create Student profile linked to user.
             student = Student.objects.create(
                 user=user,
                 full_name=request.POST.get('name'),
@@ -121,31 +106,31 @@ def student_register_view(request):
                 profile_image_url=image_url
             )
             
-
-            # Auto Login
+            # Added by Matthew/Spooky: Login.
             login(request, user)
-            return redirect('signin_page_view') # Note: url names use underscore. See student/urls.py
+            return redirect('signin_page_view')
         
 
         except Exception as e:
             print(f"--- CRITICAL ERROR DURING SAVE: {e} ---")
             return render(request, 'StudentRegistration.html', {'error': str(e)})
 
+    # Added by Matthew/Spooky: Render the registration page for GET request.
     return render(request, 'StudentRegistration.html')
 
 
-
-
 def teacher_register_view(request):
+    # Added by Matthew/Spooky: Handle teacher registration form submission.
     if request.method == 'POST':
-        # Print all data received - Used to debug and test if POST data is being sent.
+        # Added by Matthew/Spooky: Print all data received. Used to debug and test if POST data is being sent.
         print(f"Data: {request.POST}")
         
-        # Check for file
+        # Added by Matthew/Spooky: Initialize image URL for Cloudinary upload.
         image_url = None
         image_file = request.FILES.get('UploadPFP')
         if image_file:
             try:
+                # Added by Matthew/Spooky: Upload teacher profile image to Cloudinary.
                 upload_result = cloudinary.uploader.upload(
                     image_file, 
                     folder="Mentora_Profiles"
@@ -157,13 +142,13 @@ def teacher_register_view(request):
         else:
             print("Student Register: No image file provided")
 
-        # Set user data with POST data
+        # Added by Matthew/Spooky: Set user data with POST data.
         email = request.POST.get('email')
         password = request.POST.get('mainpassword')
         confirmpassword = request.POST.get('confirmpassword')
         name = request.POST.get("name", "").strip()
 
-         #Regex to ensure the name and las
+        # Added by Matthew/Spooky: Regex to ensure full name.
         name_regex = r"^[A-Za-z]+(?: [A-Za-z'-]+)+$"
         if not name: 
             messages.error(request, "Full name is required.")
@@ -175,32 +160,19 @@ def teacher_register_view(request):
         if User.objects.filter(email=email).exists():
             print("Teacher Register: User already exists ---")
             return render(request, 'TeacherRegistration.html', {'error': 'Email already exists'})
-        # Password authentication
+        # Added by Matthew/Spooky: Password authentication.
         if password != confirmpassword:
             messages.error(request, "Password do not match.")
             return render(request, "TeacherRegistration.html")
-        
-
-        #Email authentication
-        if User.objects.filter(email=email).exists(): 
-            messages.error(request, "Email already exists.") 
-            return render(request, "TeacherRegistration.html")
-        
-
-        if User.objects.filter(email=email).exists():
-            print("Teacher Register: User already exists ---")
-            return render(request, 'TeacherRegistration.html', {'error': 'Email already exists'})
 
         try:
-            # Create User
             user = User.objects.create_user(
-                username=request.POST.get('name'),  # Changed from email to name
+                username=email,
                 email=email, 
                 password=password
             )
 
-            # Create Profile - Student or Teacher
-
+            # Added by Matthew/Spooky: Create Teacher profile linked to user.
             teacher = Teacher.objects.create(
                 user=user,
                 full_name=request.POST.get('name'),
@@ -209,15 +181,17 @@ def teacher_register_view(request):
                 profile_image_url=image_url
             )
             
-            # Auto Login
+            # Added by Matthew/Spooky: Login.
             login(request, user)
-            return redirect('signin_page_view') # replace with 'teacher_dashboard' when ready
+            return redirect('signin_page_view')
 
         except Exception as e:
             print(f"--- CRITICAL ERROR DURING SAVE: {e} ---")
             return render(request, 'TeacherRegistration.html', {'error': str(e)})
 
+    # Added by Matthew/Spooky: Render the teacher registration page on GET.
     return render(request, 'TeacherRegistration.html')
+
 
 """Added By Mark: For redirecs """
 
@@ -227,50 +201,49 @@ class CustomLoginView(LoginView):
     def get_success_url(self):
         user = self.request.user
 
-        # this check for the student profile
+        # Added by Matthew/Spooky: Check if the user has a student profile.
         if hasattr(user, 'students_student_profile'):
-            # The user has a student profile, redirect to their dashboard
+            # Added by Matthew/Spooky: The user has a student profile, redirect to their dashboard.
             return reverse_lazy('student_home')
         
-        #  this check for the teacher profile
+        # Added by Matthew/Spooky: Check if the user has a teacher profile.
         elif hasattr(user, 'teachers_teacher_profile'):
-            # The user has a teacher profile, redirect them
+            # The user has a teacher profile, redirect them.
             return reverse_lazy('teacher_home') 
         
-        # Fallback for other users (like superusers without profiles)
+        # Added by Matthew/Spooky: Fallback for other users just in case.
         else:
-            return reverse_lazy('SignInPage.html')
-
-
-
+            return reverse_lazy('signin_page_view')
 
 
 def signin_page_view(request):
+    # Added by Matthew/Spooky: Initialize variable to prevent errors.
+    email = None
+
     if request.method == 'POST':
-        email = request.POST.get('email')
-        password = request.POST.get('password')
+        # Added by Matthew/Spooky: Capture POST data for login.
+        email = request.POST['email']
+        password = request.POST['password']
 
         user = authenticate(request, username=email, password=password)
         
         if user is not None:
+            # Added by Matthew/Spooky: Log user in.
             login(request, user)
             
-            # DEBUGGING PRINTS - Check your terminal/console!
             print(f"User {email} logged in.")
             print(f"Has Student Profile: {hasattr(user, 'students_student_profile')}")
             
-            if user.is_student:
-                return redirect('student_home')
-            elif user.is_teacher:
-                return redirect('teacher_home')
+            if Teacher.objects.filter(user=user).exists():
+                return redirect("teacher_home")
+
+            elif Student.objects.filter(user=user).exists():
+                return redirect("student_home")
             else:
-                print("User has no profile linked!")
-                return redirect('home')
+                return redirect("home")
         else:
             messages.error(request, "Invalid email or password.")
             print(f"Authentication failed for {email}")
 
+    # Added by Matthew/Spooky: Render the signin page for GET request.
     return render(request, 'SignInPage.html')
-
-
-

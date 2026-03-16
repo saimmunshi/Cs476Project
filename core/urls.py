@@ -42,6 +42,7 @@ urlpatterns = [
     # Note from Mark: Not sure exactly how this pathing works, but URLS will have /accounts/ in it via Django authentication
     path('courses/', include('courses.urls')),
     
+    path("accounts/", include("django.contrib.auth.urls")),
 ]
 
 """

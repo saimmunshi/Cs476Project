@@ -1,0 +1,37 @@
+{% extends 'BaseTeacher.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'courses/css/feedback.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="main-content">
+
+<div class="feedback-page">
+
+    <div class="feedback-card">
+
+        <h2>Edit Feedback</h2>
+
+        <form method="POST" class="feedback-form">
+            {% csrf_token %}
+            <!-- Added by Matthew/Spooky: Pre-fill existing feedback message. -->
+            <textarea name="message" required>{{ feedback.message }}</textarea>
+            
+            <div class="feedback-buttons">
+                <button type="submit" class="edit-btn">Update Feedback</button>
+                <!-- Added by Matthew/Spooky: Cancel and return to feedback page. -->
+                <a href="{% url 'courses:feedback_page' %}">
+                    <button type="button" class="delete-btn">Cancel</button>
+                </a>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+</main>
+{% endblock %}

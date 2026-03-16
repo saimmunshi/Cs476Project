@@ -14,10 +14,15 @@ from functools import wraps
 def teacher_required(view_func):
     @wraps(view_func)
     def wrapper(request, *args, **kwargs):
-        if not request.user.is_teacher:
+
+        teacher = Teacher.objects.filter(user=request.user).first()
+
+        if not teacher:
             return HttpResponseForbidden("You must be logged in as a teacher.")
-        request.teacher_profile = request.user.teachers_teacher_profile 
+
+        request.teacher_profile = teacher
         return view_func(request, *args, **kwargs)
+
     return wrapper
 
 """
@@ -201,43 +206,3 @@ def teacherTaskSubmissions(request, task_id):
 Added by Mark: Give Feedback Page
 Notes: A page for giving feedback on a specific task.
 """
-@login_required
-@teacher_required
-def teacherFeedback(request, submission_id):
-    current_teacher = request.teacher_profile
-
-    # Get the specific submission
-    submission = get_object_or_404(TaskSubmission, id=submission_id, task__course__teacher=current_teacher)
-    
-    # Get existing feedback if the teacher is editing a previous grade
-    feedback = TaskFeedback.objects.filter(submission=submission).first()
-
-    if request.method == "POST":
-        grade = request.POST.get('grade')
-        comments = request.POST.get('comments', '')
-
-        if feedback:
-            # Update existing feedback
-            feedback.grade = grade
-            feedback.comments = comments
-            feedback.save()
-        else:
-            # Create new feedback
-            TaskFeedback.objects.create(
-                submission=submission,
-                grade=grade,
-                comments=comments
-            )
-        
-        # Mark the submission as reviewed!
-        submission.status = 'reviewed'
-        submission.save()
-
-        # Redirect back to the list of submissions for this task
-        return redirect('teacher-task-submissions', task_id=submission.task.id)
-
-    context = {
-        'submission': submission,
-        'feedback': feedback
-    }
-    return render(request, 'tasks/templates/teacher-feedback.html', context)

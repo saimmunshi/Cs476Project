@@ -1,24 +1,25 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
-
-# Added by Matthew/Spooky: This stores the the root directory.
-BASE_DIR = Path(__file__).resolve().parent.parent
+import cloudinary
 
 # Added by Matthew/Spooky: Loading the .env file so its variables can be accessed using os.getenv().
 load_dotenv()
 
+# Added by Matthew/Spooky: This stores the the root directory.
+BASE_DIR = Path(__file__).resolve().parent.parent
+
 # Added by Matthew/Spooky: Getting the mongodb URL from the .env file.
 MONGO_URL = os.getenv("MONGO_URL")
 
-# Added by Matthew/Spooky: This is used by django for security features.
-SECRET_KEY = 'django-insecure-%+%!%)p1s=okt4lx6jqj^i18-@s+ul4@*2ni8vr@5+vg@m0*em'
+# Added by Matthew/Spooky: Getting the secret key URL from the .env file.
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # Added by Matthew/Spooky: Temp for testing.
 DEBUG = True
 
 # Added by Matthew/Spooky: Defines which domains django can use. For now just localhost.
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
 # Added by Matthew/Spooky: This tells django which apps are active.
 INSTALLED_APPS = [
@@ -52,6 +53,9 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         # DIRS tells Django to look for a root 'templates' folder for your Sidebar/Base
         'DIRS': [
+
+            os.path.join(BASE_DIR, 'users/main/templates'), 
+
             #Users App Connection Logic:
             os.path.join(BASE_DIR, 'users/MainHome/templates'),
             os.path.join(BASE_DIR, 'users/TeacherRegistration/templates'),
@@ -116,19 +120,14 @@ DATABASES = {
 }
 
 AUTHENTICATION_BACKENDS = [
+    'users.backends.EmailBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
-# Added by Matthew/Spooky: This sets the default primary key field type for models.
-DEFAULT_AUTO_FIELD = 'django_mongodb_backend.fields.ObjectIdAutoField'
-
-# Added by Matthew/Spooky: Silences specific mongodb system warnings from django.
-SILENCED_SYSTEM_CHECKS = ['mongodb.E001']
-
 # Added by Matthew/Spooky: Cloudinary configuration used to store uploaded profile pictures or documents.
-CLOUDINARY_STORAGE = {
-    'CLOUDINARY_URL': os.getenv('CLOUDINARY_URL')
-}
+cloudinary.config(
+    url=os.getenv("CLOUDINARY_URL")
+)
 
 STORAGES = {
     "default": {
@@ -229,10 +228,7 @@ STATICFILES_DIRS =[
     os.path.join(BASE_DIR, 'teachers/features/tasks/static'), 
     os.path.join(BASE_DIR, 'teachers/features/My_Student/static'), 
     os.path.join(BASE_DIR, 'teachers/features/Setting/static'),
-    os.path.join(BASE_DIR, 'teachers/BaseTeacher/static'),
 
     #Added by: Matthew/Spooky.
     os.path.join(BASE_DIR, 'courses/static'),
 ]
-
-from django.core.servers.basehttp import WSGIServer

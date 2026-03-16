@@ -1,0 +1,127 @@
+body{
+    margin:0;
+    font-family: Arial, Helvetica, sans-serif;
+    background:#f4f6f8;
+}
+
+/* Layout */
+
+.dashboard{
+    display:flex;
+    height:100vh;
+}
+
+/* Sidebar */
+
+.sidebar{
+    width:230px;
+    background:#f0f0f0;
+    padding:25px 20px;
+    border-right:1px solid #ddd;
+}
+
+.sidebar-title{
+    font-size:20px;
+    font-weight:bold;
+    margin-bottom:30px;
+}
+
+.sidebar-menu{
+    list-style:none;
+    padding:0;
+}
+
+.sidebar-menu li{
+    margin-bottom:15px;
+}
+
+.sidebar-menu a{
+    text-decoration:none;
+    color:#333;
+    font-size:16px;
+    display:block;
+    padding:10px;
+    border-radius:8px;
+}
+
+.sidebar-menu li.active a{
+    background:#cfd8ea;
+}
+
+/* Main Content */
+
+.main-content{
+    flex:1;
+    padding:40px;
+    overflow-y:auto;
+}
+
+/* Cards */
+
+.card{
+    background:white;
+    padding:30px;
+    border-radius:12px;
+    margin-bottom:30px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.05);
+}
+
+.card h2{
+    margin-bottom:20px;
+}
+
+/* Form */
+
+form select,
+form input[type="file"],
+form textarea{
+    width:100%;
+    padding:12px;
+    margin-bottom:15px;
+    border-radius:8px;
+    border:1px solid #ddd;
+    font-size:14px;
+}
+
+form textarea{
+    height:120px;
+    resize:none;
+}
+
+form button{
+    background:black;
+    color:white;
+    padding:10px 20px;
+    border:none;
+    border-radius:8px;
+    font-size:14px;
+    cursor:pointer;
+}
+
+form button:hover{
+    opacity:0.9;
+}
+
+/* Feedback List */
+
+.feedback-item{
+    border-top:1px solid #eee;
+    padding-top:15px;
+    margin-top:15px;
+}
+
+.feedback-meta{
+    font-size:14px;
+    color:#777;
+    margin-bottom:5px;
+}
+
+.feedback-buttons button{
+    margin-right:10px;
+    padding:8px 14px;
+    border:none;
+    border-radius:6px;
+    background:black;
+    color:white;
+    cursor:pointer;
+}

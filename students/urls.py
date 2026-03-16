@@ -20,4 +20,7 @@ urlpatterns = [
     # Task URLs
     path('tasks/', views.studentTasks, name='student-tasks'),
     path('tasks/<str:task_id>/', views.studentTaskSubmit, name='student-task-submit'),
+    # Student Feedback Page
+    
+
 ]

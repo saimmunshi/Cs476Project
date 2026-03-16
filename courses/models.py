@@ -1,31 +1,53 @@
-# courses/models.py
 from django.db import models
 from django_mongodb_backend.fields import ObjectIdAutoField
 
 # Added by Mark: This creates the blueprint for the entire Course and Task system backend.
 
-# Class: Course (MongoDB collection = courses_course)
-# The main overarching object blueprint for a Course.
-#
-#
-
-
-
-# courses/models.py
-
 from users.models import CustomUser
 
 class Feedback(models.Model):
-    sender = models.ForeignKey(CustomUser, related_name="sent_feedbacks", on_delete=models.CASCADE)
-    receiver = models.ForeignKey(CustomUser, related_name="received_feedbacks", on_delete=models.CASCADE)
+    # Added by Matthew/Spooky: MongoDB primary key.
+    id = ObjectIdAutoField(primary_key=True) 
+
+    sender = models.ForeignKey(
+        CustomUser,
+        related_name="sent_feedbacks",
+        on_delete=models.CASCADE
+    )
+
+    receiver = models.ForeignKey(
+        CustomUser,
+        related_name="received_feedbacks",
+        on_delete=models.CASCADE
+    )
+
+    course = models.ForeignKey(
+        "courses.Course",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
+    )
+
+    task = models.ForeignKey(
+        "courses.Task",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
+    )
+
     message = models.TextField()
+    # Added by Matthew/Spooky: Optional attachment.
     attachment_url = models.URLField(blank=True, null=True)
+    # Added by Matthew/Spooky: Track read status.
     is_read = models.BooleanField(default=False)
+
     created_at = models.DateTimeField(auto_now_add=True)
+    # Added by Matthew/Spooky: Track archived feedback.
+    is_archived_for_receiver = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"From {self.sender} to {self.receiver} - {self.created_at}"
-
+        # Added by Matthew/Spooky: For admin display.
+        return f"{self.sender} → {self.receiver}"
 
 
 class Course(models.Model):
@@ -34,7 +56,7 @@ class Course(models.Model):
   description = models.TextField()
   max_students = models.PositiveIntegerField()
 
-  # RELATIONS
+  # Added by Matthew/Spooky: Relations.
   teacher = models.ForeignKey(
   	'teachers.Teacher', 
     on_delete=models.CASCADE,
@@ -51,10 +73,6 @@ class Course(models.Model):
   def __str__(self):
     return self.title
 
-# Class: Task (MongoDB collection = courses_task)
-# 
-#
-#
 class Task(models.Model):
   id = ObjectIdAutoField(primary_key=True)
   course = models.ForeignKey(
@@ -67,7 +85,7 @@ class Task(models.Model):
   description = models.TextField()
   start_date = models.DateTimeField(null=True, blank=True)
   due_date = models.DateTimeField(null=True, blank=True)
-  points_possible = models.IntegerField(default=100) # Might be removed, don't need grading.
+  points_possible = models.IntegerField(default=100)
   assigned_students = models.ManyToManyField(
       'students.Student',
       related_name='assigned_tasks',
@@ -79,10 +97,6 @@ class Task(models.Model):
   def __str__(self):
     return f"{self.title} ({self.course.title})"
 
-# Class: TaskSubmission (MongoDB collection = courses_tasksubmission)
-# Represents the student's actual uploaded submission (the file or answer).
-#
-#
 class TaskSubmission(models.Model):
   id = ObjectIdAutoField(primary_key=True)
   
@@ -96,12 +110,9 @@ class TaskSubmission(models.Model):
 		on_delete=models.CASCADE,
 		related_name='submissions'
   )
-  
-  # The content of the submission
-  submission_text = models.TextField(blank=True) 
-  file_url = models.URLField(blank=True) # If they upload a file
+  submission_text = models.TextField(blank=True)
+  file_url = models.URLField(blank=True)
 
-  # Django char fields are tuples
   STATUS_CHOICES = [
     ('pending', 'Pending'),
     ('reviewed', 'Reviewed'),
@@ -111,29 +122,23 @@ class TaskSubmission(models.Model):
   submitted_at = models.DateTimeField(auto_now_add=True)
   
   class Meta:
-      # Ensures a student can only submit ONCE per task
-      # If they submit again, they should update this existing record
+      # Added by Matthew/Spooky: one submission per student per task.
       unique_together = ('task', 'student')
 
   def __str__(self):
       return f"Submission: {self.student} - {self.task.title}"
 
-# Class: TaskFeedBack (MongoDB collection = courses_taskfeedback)
-# Represents the teacher's grading and comments.
-#
-#
 class TaskFeedback(models.Model):
   id = ObjectIdAutoField(primary_key=True)
   
-  # OneToOne because one submission has exactly one feedback/grade
   submission = models.OneToOneField(
       TaskSubmission,
       on_delete=models.CASCADE,
-      related_name='feedback' # Access via: submission.feedback
+      related_name='feedback'
   )
-  
-  grade = models.FloatField() # Might be removed, don't need grading.
-  comments = models.TextField(blank=True) # Example: "Great job, but check spelling."
+  grade = models.FloatField()
+  # Added by Matthew/Spooky: feedback comments.
+  comments = models.TextField(blank=True)
   
   graded_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)

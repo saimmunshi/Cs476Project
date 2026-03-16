@@ -15,7 +15,5 @@ urlpatterns = [
     # Note: This is required for specific task pages
     path('tasks/<str:task_id>/submissions/', views.teacherTaskSubmissions, name='teacher-task-submissions'),
     
-    # Note: This is required for specific feedback pages
-    path('submissions/<str:submission_id>/feedback/', views.teacherFeedback, name='teacher-feedback'),
-    path('calendar/', views.Calendar, name='calendar'),
+
 ]

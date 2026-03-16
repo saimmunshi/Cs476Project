@@ -33,11 +33,11 @@ See something like student-dashboard.html for an example of it's usage.
     
         {% if user.is_student %}
           <p><a class="sidebar__link" href="{% url 'student_dashboard' %}">Dashboard</a></p>
-          <p><a class="sidebar__link" href="{% url 'student_feedback' %}">Feedback</a></p>
+          <p><a class="sidebar__link" href="{% url 'courses:student_feedback' %}">Feedback</a></p>
         {% endif %}
     
         {% if user.is_teacher %}
-          <p><a class="sidebar__link" href="{% url 'teacher_feedback' %}">Student Feedback</a></p>
+          <p><a class="sidebar__link" href="{% url 'courses:feedback_page' %}">Student Feedback</a></p>
         {% endif %}
     
         <a class="sidebar__link sidebar-link-bottom" href="{% url 'home' %}">Home (Main Page)</a>
