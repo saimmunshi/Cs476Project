@@ -606,7 +606,7 @@ def Progress(request):
 @login_required
 @student_required
 def studentSettings(request):
-    teacher = request.teacher_profile
+    student = request.student_profile
     user = request.user
 
     if request.method == "POST":
@@ -614,9 +614,9 @@ def studentSettings(request):
         # Basic info
         # Basic info
         user.email = request.POST.get("email")
-        teacher.full_name = request.POST.get("full_name")
+        student.full_name = request.POST.get("full_name")
         user.save()
-        teacher.save()
+        student.save()
 
         # Password fields
         current_password = request.POST.get("current_password")
@@ -643,6 +643,6 @@ def studentSettings(request):
         else:
             messages.success(request, "Settings updated successfully")
 
-        return redirect("teacher-settings")
+        return redirect("student-settings")
 
-    return render(request, "Setting/templates/teacher-settings.html", {"user": user})
+    return render(request, "Setting/templates/student-settings.html", {"user": user})
