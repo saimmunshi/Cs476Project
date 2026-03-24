@@ -601,3 +601,48 @@ def Progress(request):
         "stats": stats,
     })
     
+
+# Added by Stephen:
+@login_required
+@student_required
+def studentSettings(request):
+    teacher = request.teacher_profile
+    user = request.user
+
+    if request.method == "POST":
+
+        # Basic info
+        # Basic info
+        user.email = request.POST.get("email")
+        teacher.full_name = request.POST.get("full_name")
+        user.save()
+        teacher.save()
+
+        # Password fields
+        current_password = request.POST.get("current_password")
+        new_password = request.POST.get("new_password")
+        confirm_password = request.POST.get("confirm_password")
+
+        if new_password or confirm_password:
+
+            if not current_password:
+                messages.error(request, "Enter current password to change password")
+
+            elif not user.check_password(current_password):
+                messages.error(request, "Current password is incorrect")
+
+            elif new_password != confirm_password:
+                messages.error(request, "Passwords do not match")
+
+            else:
+                user.set_password(new_password)
+                user.save()
+                update_session_auth_hash(request, user)
+                messages.success(request, "Password updated successfully")
+
+        else:
+            messages.success(request, "Settings updated successfully")
+
+        return redirect("teacher-settings")
+
+    return render(request, "Setting/templates/teacher-settings.html", {"user": user})
