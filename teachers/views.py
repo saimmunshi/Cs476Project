@@ -13,6 +13,8 @@ from django.db.models import Count
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.utils import timezone #added by win516
+import cloudinary
+import cloudinary.uploader
 
 # Create your views here.
 
@@ -63,9 +65,57 @@ def teacherHome(request):
 
     student_count = len(distinct_students)
 
-    # Added By Saim Munshi: Count of all tasks created across all this teacher's courses 
-
+    #Added By Saim Munshi: Count of all tasks created across all this teacher's courses 
     task_count = Task.objects.filter(course__teacher=teacher).count()
+
+    # Added By Saim Munshi: this is progress logic
+    # **Note: this was logic from waseera code***
+    courses = Course.objects.filter(teacher=teacher)
+    student_map = {}
+    now = timezone.now()
+
+    # Added By Saim Munshi: this is progress logic
+    # **Note: this was logic from waseera code***
+    for course in courses:
+        for student in course.students.all():
+            sid = str(student.id)
+            
+            total_t = Task.objects.filter(course=course, assigned_students=student).count()
+            comp_t = TaskSubmission.objects.filter(task__course=course, student=student, status='reviewed').count()
+            
+            overdue_count = Task.objects.filter(
+                course=course, 
+                assigned_students=student, 
+                due_date__lt=now
+            ).exclude(
+                id__in=TaskSubmission.objects.filter(student=student, status='reviewed').values_list('task_id', flat=True)
+            ).count()
+
+            if sid not in student_map:
+                student_map[sid] = {"comp": 0, "over": 0, "total": 0}
+
+            student_map[sid]["comp"] += comp_t
+            student_map[sid]["over"] += overdue_count
+            student_map[sid]["total"] += total_t
+
+    # Added By Saim Munshi: this is progress logic
+    # **Note: this was logic from waseera code***
+    needs_attention = 0
+    total_progress_sum = 0
+    for sid, s in student_map.items():
+        prog = int((s["comp"] / s["total"]) * 100) if s["total"] > 0 else 0
+        total_progress_sum += prog
+        if prog < 40 or s["over"] > 0:
+            needs_attention += 1
+
+    # **Note: this was logic from waseera code***
+    stats = {
+        "active_students": len(student_map),
+        "needs_attention": needs_attention,
+        "avg_completion": int(total_progress_sum / len(student_map)) if student_map else 0,
+    }
+   
+
     context = {
        'teacher': teacher_profile,
         'notifications': unread_notifications,
@@ -74,6 +124,7 @@ def teacherHome(request):
         'course_count': course_count,
         'student_count': student_count,
         'task_count': task_count,
+        'stats': stats, 
     }
    
     return render(request, 'TeacherHomePage/templates/TeacherHomePage.html', context)
@@ -232,7 +283,7 @@ def Create_Task(request):
         # Added By Saim Munshi: Create Tasks Notification
         Notification.objects.create(
             user=request.user,
-            notification_type=f"create_task",
+            notification_type=f"Create Task",
             message=f"Task '{title}' has been successfully created!"
         )
         if student_ids:
@@ -315,7 +366,15 @@ Notes: A page for giving feedback on a specific task.
 @teacher_required
 def teacherFeedback(request, submission_id):
     current_teacher = request.teacher_profile
-    submission = get_object_or_404(TaskSubmission, id=submission_id, task__course__teacher=current_teacher)
+    # Before optimization:
+    # submission = get_object_or_404(TaskSubmission, id=submission_id, task__course__teacher=current_teacher)
+
+    # After optimization: (Tell Django to pre-fetch the task, course, teacher, and student in one go)
+    submission = get_object_or_404(
+        TaskSubmission.objects.select_related('task__course__teacher', 'student'), 
+        id=submission_id, 
+        task__course__teacher=current_teacher
+    )
     feedback = TaskFeedback.objects.filter(submission=submission).first()
     if request.method == "POST":
         grade = request.POST.get('grade')
@@ -382,71 +441,81 @@ def editCourse(request, course_id):
 def deleteCourse(request, course_id):
     course = get_object_or_404(Course, id=course_id, teacher=request.teacher_profile)
     if request.method == "POST":
+    # Added By Saim Munshi: gets all course title
+        course_title = course.title
+        # Added By Saim Munshi: gets all student enrolled in course
+        enrolled_students = list(course.students.all())
         course.delete()
+
+    
+      
+        # Added By Saim Munshi: Create Delete Notification for students
+        for student in enrolled_students:
+            Notification.objects.create(
+                user=student.user,
+                notification_type="course_deleted",
+                message=f"The course '{course_title}' has been deleted."
+            )
+         # Added By Saim Munshi: Create Delete Notification for mentor:
         Notification.objects.create(
             user=request.user,
             notification_type=f"Delete Course",
             message=f"Course '{course.title}' has been successfully Deleted!"
         )
+        # Redirect back to the course list page
         return redirect('teacher-course-list')
+    
     return redirect('teacher-course-list')
+
 
 # Added By Saim Munshi: Edit task  using create task form 
 @login_required
 @teacher_required
 def editTask(request, task_id): 
     task = get_object_or_404(Task, id=task_id)
-    teacher_profile = request.teacher_profile
-    courses = Course.objects.filter(teacher=teacher_profile) 
-
-    # Added By Saim Munshi: Note: This is from the Create Task creates empty dictionary to store student course they belong to  
-    course_students_map = {}
-    #  Added By Saim Munshi: Note: this than look to dictonary with course idllist of student and relevent 
-    for course in courses:
-        course_students_map[str(course.id)] = [
-            {'id': str(s.id), 'full_name': s.full_name} 
-            for s in course.students.all()
-        ]
-
-    # Added By Saim Munshi: gets currently assigned students lined to this task
-    assigned_student_ids = [str(sid) for sid in task.assigned_students.values_list('id', flat=True)]
-
-    # Added By Saim Munshi: check save button clicked and gets the new title description start etc typed into the form updated the old data
+    courses = Course.objects.filter(teacher=request.teacher_profile) 
+    
     if request.method == "POST":
         task.title = request.POST.get("title")
         task.description = request.POST.get("description") 
         task.start_date = request.POST.get("start_date") 
         task.due_date = request.POST.get("due_date") 
         
-        #Added by Saim Munshi: this is to check which course was selected in the dropdown menu
         course_id = request.POST.get("course")
         if course_id:
-            course = get_object_or_404(Course, id=course_id, teacher=teacher_profile)
+            course = get_object_or_404(Course, id=course_id, teacher=request.teacher_profile)
             task.course = course
-
-        #Added by Saim Munshi: saave task info to database
+        
         task.save()
         
-        #Added by Saim Munshi: Update many to many relationship and all selected student in the list
+        # Added by Saim Munshi Update assigned students
         student_ids = request.POST.getlist('students')
         task.assigned_students.set(student_ids) 
         
-        Notification.objects.create(
-            user=request.user,
-            notification_type="Edit task",
-            message=f"Task '{task.title}' has been successfully updated!"
-        )
+        # Notify students logic here...
+        
+        return redirect("teacher-course-main", course_id=task.course.id)
 
-        #Added By Saim Munshi: sends the teacher back to the main course page once the edit is finished
-        return redirect("teacher-course-main", course_id=str(task.course.id))
+
+    #Added By Saim Munshi Map students to courses for the js
+    course_students_map = {}
+    for c in courses:
+        course_students_map[str(c.id)] = [
+            {'id': str(s.id), 'name': s.full_name} for s in c.students.all()
+        ]
+    
+  
+
+    assigned_student_ids = [str(s.id) for s in task.assigned_students.all()]
 
     context = {
         "task": task,
         "courses": courses,
-        "course_students_map": course_students_map, 
+        "course_students_map": course_students_map,
         "assigned_student_ids": assigned_student_ids,
     }
-    return render(request, 'tasks/templates/create-task.html', context)
+
+    return render(request, "tasks/templates/create-task.html", context)
 
 # Added By Saim Munshi: Delete task logic
 @login_required
@@ -458,8 +527,19 @@ def deleteTask(request, task_id):
 
     if request.method == "POST":
         task_title = task.title
+        assigned_students = list(task.assigned_students.all())
         task.delete()
-        
+
+   
+        # Added By Saim Munshi: Notify every student from the list we saved in memory
+        for student in assigned_students:
+            Notification.objects.create(
+                user=student.user,
+                notification_type="task_deleted",
+                message=f"The task '{task_title}' has been deleted by the instructor."
+            )
+
+
          # Added By Saim Munshi: Create Delete Notification:
         Notification.objects.create(
             user=request.user,
@@ -655,3 +735,5 @@ def teacherSettings(request):
         return redirect("teacher-settings")
 
     return render(request, "Setting/templates/teacher-settings.html", {"user": user})
+
+

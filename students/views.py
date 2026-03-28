@@ -11,6 +11,7 @@ from django.contrib import messages  # For error messages
 from django.contrib.auth import update_session_auth_hash
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
+from django.utils import timezone #added by win516
 
 # Create your views here.
 # Added by Mark: Helper function to check the student profile. 
@@ -54,17 +55,71 @@ def studentHome(request):
         is_read=False
     ).order_by('-created_at')
     
+
+    #Added By Saim Munshi: progress logic for student dashboard 
+    #Note: Reused code from student progress view and mentor view (credit Waseera)
+    student = request.student_profile
+    now = timezone.now()
+    enrolled_courses = student.enrolled_courses.all()
+    total_completed_all = 0
+    total_tasks_all = 0
+    total_overdue_all = 0
+
+    for course in enrolled_courses:
+        total_tasks = Task.objects.filter(
+            course=course,
+            assigned_students=student
+        ).count()
+
+        completed = TaskSubmission.objects.filter(
+            task__course=course,
+            student=student,
+            status='reviewed'
+        ).count()
+
+        overdue = Task.objects.filter(
+            course=course,
+            assigned_students=student,
+            due_date__lt=now
+        ).exclude(
+            id__in=TaskSubmission.objects.filter(
+                student=student,
+                status='reviewed'
+            ).values_list('task_id', flat=True)
+        ).count()
+
+        total_completed_all += completed
+        total_tasks_all += total_tasks
+        total_overdue_all += overdue
+
+    overall_progress = int((total_completed_all / total_tasks_all) * 100) if total_tasks_all > 0 else 0
+
+    # Added By Saim Munshi:
+    # Note: this is stats logic from progress view (credit Waseera) 
+   
+    # Dashboard-specific extras
+    unread_notifications = Notification.objects.filter(user=user, is_read=False).order_by('-created_at')
+    upcoming_tasks = Task.objects.filter(assigned_students=student, due_date__gte=now).order_by('due_date')[:5]
+
+    stats = {
+        "total_courses": enrolled_courses.count(),
+        "overall_progress": overall_progress,
+        "total_completed": total_completed_all,
+        "total_overdue": total_overdue_all,
+        "total_tasks_all": total_tasks_all,
+    }
+
     context = {
-        'student': student_profile,
-        'course_count': course_count,
-        'task_count': task_count,
+        'student': student,
+        'stats': stats,  
         'mentor_count': mentor_count,
         'upcoming_tasks': upcoming_tasks,
         'notifications': unread_notifications,
-        'notification_count': unread_notifications.count()
+        'notification_count': unread_notifications.count(),
     }
-    
+
     return render(request, 'StudentHomePage/templates/StudentHomePage.html', context)
+
 @login_required
 @student_required
 def markNotificationAsRead(request, notification_id):
@@ -172,7 +227,15 @@ def joinCourse(request, course_id):
         course = get_object_or_404(Course, id=course_id)
         if course.students.count() < course.max_students:
             course.students.add(student)
+        #Added By Saim Munshi: This creates a notfication when the student joins the course 
+        #Note: Code reused from mentor 
+        Notification.objects.create(
+                user=request.user,
+                notification_type="Course Enrollment",
+                message=f"You have successfully enrolled in {course.title}!"
+            )
         return redirect('my-courses')
+        
     return HttpResponseBadRequest("Invalid Request")
 
 """
@@ -206,10 +269,23 @@ Added by Mark: Function that removes currently logged in student from a specific
 @student_required
 def leaveCourse(request, course_id):
     student = request.student_profile
+
     if request.method == "POST":
+        # get_object_or_404 with students=student ensures they can only leave a course they are actually in
         course = get_object_or_404(Course, id=course_id, students=student)
-        course.students.remove(student)
+        
+        # Remove the student from the ManyToMany list
+        course.students.remove(student) 
+        #Added By Saim Munshi: This creates a notfication when the student leaves the course 
+        #Note: Code reused from mentor 
+        Notification.objects.create(
+            user=request.user,
+            notification_type="Course Leave",
+            message=f"You have left the course: {course.title}."
+        )
+        # Redirect back to their course list
         return redirect('my-courses')
+    
     return HttpResponseBadRequest("Invalid Request")
 
 """ -------------------------- Task Views/Functions ------------------------------ """
@@ -275,20 +351,25 @@ def studentTaskSubmit(request, task_id):
                 file_url=uploaded_file_url,
                 status='pending'
             )
+        
+        #Added By Saim Munshi: This creates a notfication when the student submits task
+        #Note: Code reused from mentor     
+        Notification.objects.create(
+            user=request.user,
+            notification_type="Task Submission",
+            message=f"You have successfully submitted your work for '{task.title}'."
+        ) 
 
+
+        # Added By Saim Munshi: This creates a notfication for Teacher
+        # Removed by Mark: Notification is already created through Observer Pattern
+        
         # Observer Pattern Implementation
         # -------------------------------------------------------------------
         subject = SubmissionSubject(submission)
         teacher_observer = SubmissionObserver() # Create observer
         subject.attach(teacher_observer)     # Attach
         subject.set_state('pending')         # Changes state and notifies
-            
-        # Observer Pattern Implementation
-        # -------------------------------------------------------------------
-        subject = SubmissionSubject(submission)
-        teacher_observer = SubmissionObserver()
-        subject.attach(teacher_observer)
-        subject.set_state('pending')
 
         return redirect('student-tasks')
 
@@ -508,6 +589,8 @@ def Progress(request):
     })
     
 """ --- Student Settings --- """
+
+# Added by Stephen:
 @login_required
 @student_required
 def studentSettings(request):
