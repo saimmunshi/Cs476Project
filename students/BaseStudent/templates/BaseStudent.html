@@ -86,8 +86,9 @@
                     class="nav-link {% if request.resolver_match.url_name == 'student-calendar' %}active{% endif %}">
                     <i class="bi bi-calendar3"></i> Calendar
                 </a>
-
-                <a href="{% url 'student-settings' %}" class="nav-link {% if request.resolver_match.url_name == '#' %}active{% endif %}">
+                <!-- Added by Stephen -->
+                <a href="{% url 'student-settings' %}" 
+                    class="nav-link {% if request.resolver_match.url_name == 'student-settings' %}active{% endif %}">
                     <i class="bi bi-gear"></i> Settings
                 </a>
 
@@ -154,11 +155,13 @@
                     class="nav-link {% if request.resolver_match.url_name == 'student-calendar' %}active{% endif %}">
                     <i class="bi bi-calendar3"></i> Calendar
                 </a>
-
                 <hr>
-                <a href="{% url 'student-settings' %}" class="nav-link {% if request.resolver_match.url_name == 'student-settings' %}active{% endif %}">
+                 <!-- Added by Stephen -->
+                <a href="{% url 'student-settings' %}" 
+                    class="nav-link {% if request.resolver_match.url_name == 'student-settings' %}active{% endif %}">
                     <i class="bi bi-gear"></i> Settings
                 </a>
+                
             </nav>
 
             <div class="border-top pt-3">

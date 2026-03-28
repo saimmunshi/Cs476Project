@@ -588,9 +588,6 @@ def Progress(request):
         "stats": stats,
     })
     
-""" --- Student Settings --- """
-
-# Added by Stephen:
 @login_required
 @student_required
 def studentSettings(request):
@@ -624,6 +621,7 @@ def studentSettings(request):
             else:
                 user.set_password(new_password)
                 user.save()
+                # Keeps the user logged in after password change
                 update_session_auth_hash(request, user)
                 messages.success(request, "Password updated successfully")
 
@@ -632,4 +630,4 @@ def studentSettings(request):
 
         return redirect("student-settings")
 
-    return render(request, "Setting/templates/student-settings.html", {"user": user})
+    return render(request, "Setting/templates/student-settings.html", {"user": user, "student": student})
