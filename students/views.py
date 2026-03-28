@@ -630,4 +630,4 @@ def studentSettings(request):
 
         return redirect("student-settings")
 
-    return render(request, "Setting/templates/student-settings.html", {"user": user, "student": student})
+    return render(request, "Setting/templates/student-settings.html", {"user": user})
