@@ -221,9 +221,4 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'teachers/BaseTeacher/static'),
 ]
 
-STATICFILES_FINDERS = [
-    "django.contrib.staticfiles.finders.FileSystemFinder",
-    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
-]
-
 from django.core.servers.basehttp import WSGIServer
