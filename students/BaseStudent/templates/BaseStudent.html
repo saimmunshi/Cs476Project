@@ -103,8 +103,14 @@
     <!--Desktop view side bar -->
     <div class="sidebar-container d-none d-lg-block">
         <div class="sidebar-pill shadow-sm">
-            <div class="d-flex align-items-center mb-5 px-3">
-                <div class="me-3"><img src="{% static 'images/mentora_logo.png' %}" style="max-width: 40px;"></div>
+            <div class="d-flex align-items-center mb-5 px-3 position-relative">
+                <button id="hideSidebarBtn" class="sidebar-toggle-btn">
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+            
+                <div class="me-3">
+                    <img src="{% static 'images/mentora_logo2.png' %}" style="max-width: 40px;">
+                </div>
                 <span class="fs-4 fw-bold text-dark">Mentora</span>
             </div>
 
@@ -280,6 +286,10 @@
             </div>
         </div>
     </div>
+    <button id="showSidebarBtn" class="sidebar-toggle-btn show-btn">
+        <i class="bi bi-chevron-right"></i>
+    </button>
+    <script src="{% static 'js/MainStudent.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     {% block extra_js %}{% endblock %}
 </body>
