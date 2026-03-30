@@ -24,13 +24,17 @@ load_dotenv()  # 2. Call the tool to "open the vault"
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-%+%!%)p1s=okt4lx6jqj^i18-@s+ul4@*2ni8vr@5+vg@m0*em'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://cs476-test-deployment-production-7ee5.up.railway.app",
+]
 
 # Application definition
 
@@ -49,6 +53,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # ADDED BY MARK: FOR DEPLOYMENT
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -119,7 +124,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django_mongodb_backend',
         'NAME': 'MentoringAppDB',
-        'HOST': os.getenv('MONGO_URL'),
+        'HOST': os.environ.get('MONGO_URL'),
         # DO NOT put DEFAULT_AUTO_FIELD here!
     }
 }
@@ -132,7 +137,7 @@ AUTHENTICATION_BACKENDS = [
 # Added by Saim: this so Django knows to use the URL from your .env
 # Added by Saim: Storage Setup tells django to use cloudinary for storing media
 CLOUDINARY_STORAGE = {
-    'CLOUDINARY_URL': os.getenv('CLOUDINARY_URL')
+    'CLOUDINARY_URL': os.environ.get('CLOUDINARY_URL')
 }
 
 STORAGES = {
@@ -140,7 +145,7 @@ STORAGES = {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
-        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
 
