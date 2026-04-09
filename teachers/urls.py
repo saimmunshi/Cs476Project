@@ -42,5 +42,4 @@ urlpatterns = [
     
     # Added by Stephen:
     path("settings/", views.teacherSettings, name="teacher-settings"),
-
 ]
